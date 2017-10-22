@@ -1,0 +1,65 @@
+/* qtr8a.h
+****************************************************************************************************************
+****************************************************************************************************************
+
+    Copyright (C) 2017 Askar Almatov
+
+    This file is part of Libiclass. 
+    
+    Libiclass is free software: you can redistribute it and/or modify it under the terms of the GNU General
+    Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
+    
+    Libiclass is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+    License for more details.
+    
+    You should have received a copy of the GNU General Public License along with Libiclass. If not, see
+    <http://www.gnu.org/licenses/>.
+*/
+
+#ifndef LIBICLASS_QTR8A_H_
+#define LIBICLASS_QTR8A_H_ 1
+
+namespace iclass
+{
+    /**********************************************************************************************************/
+    class Qtr8a
+    {    
+
+    public:
+                                        Qtr8a
+                                        (
+                                            uint8_t     pin1,
+                                            uint8_t     pin2,
+                                            uint8_t     pin3,
+                                            uint8_t     pin4,
+                                            uint8_t     pin5,
+                                            uint8_t     pin6,
+                                            uint8_t     pin7,
+                                            uint8_t     pin8,
+                                            int         mmLineWidth,
+                                            int         threshold = 550,
+                                            bool        inverse = false
+                                        );
+
+        void                            read();
+        uint32_t                        bits() const;
+        int                             leftEdge() const;
+        int                             rightEdge() const;
+        int                             deviation() const;
+        bool                            isEmpty() const;
+        bool                            isFull() const;
+
+    protected:
+
+        uint8_t                         pins_[ 8 ];
+        const int                       stepsLineWidth_;
+        const int                       threshold_;
+        const bool                      inverse_;
+        int                             raw_[ 29 ];
+        uint32_t                        bits_;
+    };
+}
+
+#endif  // LIBICLASS_QTR8A_H_

@@ -1,0 +1,59 @@
+#######################################
+# Syntax Coloring Map For PID Library
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+AbsoluteEncoder		KEYWORD1
+Common			KEYWORD1
+Encoder			KEYWORD1
+Filter			KEYWORD1
+Logger			KEYWORD1
+MeanFilter		KEYWORD1
+MedianFilter		KEYWORD1
+MotorRegulator		KEYWORD1
+Qtr8a			KEYWORD1
+QuadratureEncoder	KEYWORD1
+Task			KEYWORD1
+ChTask			KEYWORD1
+Tb6612			KEYWORD1
+Vnh			KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+delta			KEYWORD2
+rotations		KEYWORD2
+rpm			KEYWORD2
+update			KEYWORD2
+lock			KEYWORD2
+unlock			KEYWORD2
+put			KEYWORD2
+get			KEYWORD2
+clear			KEYWORD2
+setSpiPins		KEYWORD2
+computePwm		KEYWORD2
+read			KEYWORD2
+bits			KEYWORD2
+leftEdge		KEYWORD2
+rightEdge		KEYWORD2
+deviation		KEYWORD2
+isEmpty			KEYWORD2
+isFull			KEYWORD2
+start			KEYWORD2
+stop			KEYWORD2
+isStarted		KEYWORD2
+isStopped		KEYWORD2
+isFinished		KEYWORD2
+routine			KEYWORD2
+setPwmA			KEYWORD2
+setPwmB			KEYWORD2
+setPwm			KEYWORD2
+current			KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
