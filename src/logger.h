@@ -60,15 +60,15 @@ namespace iclass
 
                                         Logger( const char* fileName, unsigned ringSize=4096 );
 
-        void                            setSpiPins( int csPin, int sckPin );
+        void                            setSpiPins( uint8_t csPin, uint8_t sckPin );
 
         virtual void                    routine();
 
     protected:
 
         const char*                     fileName_;
-        int                             csPin_;
-        int                             sckPin_;
+        uint8_t                         csPin_;
+        uint8_t                         sckPin_;
     };
 }
 

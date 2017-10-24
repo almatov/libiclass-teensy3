@@ -15,7 +15,8 @@ patch the ChRt library with command
 **Common** class is a base class for all classes that assume concurrent access.
 
 **Logger** class is SD card logger with simple Serial like interface. It was written
-as a parallel task to avoid of jitter increasing of main thread.
+as a parallel task to avoid of jitter increasing of main thread. Builtin SD card works
+in SDIO mode.
 
 **MeanFilter** class is a filter of incoming data based on computing of mean value of
 last set.

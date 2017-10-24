@@ -130,14 +130,13 @@ LoggerQueue::write( uint8_t byte )
 Logger::Logger( const char* fileName, unsigned ringSize ) :
     LoggerQueue( ringSize ),
     fileName_( fileName ),
-    csPin_( -1 ),
-    sckPin_( -1 )
+    csPin_( BUILTIN_SDCARD )
 {
 }
 
 /**************************************************************************************************************/
 void
-Logger::setSpiPins( int csPin, int sckPin )
+Logger::setSpiPins( uint8_t csPin, uint8_t sckPin )
 {
     csPin_ = csPin;
     sckPin_ = sckPin;
@@ -147,19 +146,15 @@ Logger::setSpiPins( int csPin, int sckPin )
 void
 Logger::routine()
 {
-    if ( csPin_ >= 0 )
+    if ( csPin_ != BUILTIN_SDCARD )
     {
         // SPI mode
         pinMode( csPin_, OUTPUT );
         SPI.setSCK( sckPin_ );
         SPI.begin();
-        SD.begin( csPin_ );
     }
-    else
-    {
-        // SDIO mode
-        SD.begin( BUILTIN_SDCARD );
-    }
+
+    SD.begin( csPin_ );
 
     File  logFile( SD.open(fileName_, FILE_WRITE) );
 
