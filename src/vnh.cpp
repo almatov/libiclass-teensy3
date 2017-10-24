@@ -2,7 +2,7 @@
 ****************************************************************************************************************
 ****************************************************************************************************************
 
-    Copyright (C) 2017 Askar Almatov
+    Copyright (C) 2017, 2018 Askar Almatov
 
     This file is part of Libiclass. 
     
@@ -22,7 +22,7 @@
 
 using namespace iclass;
 
-const double    KCS( 0.13 );
+const double    KCS_    ( 0.13 );
 
 /**************************************************************************************************************/
 Vnh::Vnh
@@ -112,7 +112,7 @@ Vnh::setPwm( int pwm )
 float
 Vnh::current( int arBits, float aref )
 {
-    double  kAmper( static_cast<double>(aref) / ((1<<arBits) - 1) / KCS );
+    double  kAmper( static_cast<double>(aref) / ((1<<arBits) - 1) / KCS_ );
     
     return analogRead( csPin_ ) * kAmper;
 }

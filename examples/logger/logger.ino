@@ -92,9 +92,9 @@ setup()
 void
 loop()
 {
-    static int  i( 0 );
+    static int  iteration( 0 );
 
-    Serial.print( ++i );
+    Serial.print( ++iteration );
     Serial.print( '\t' );
     Serial.println( logger.overflows() );
 

@@ -2,7 +2,7 @@
 ****************************************************************************************************************
 ****************************************************************************************************************
 
-    Copyright (C) 2017 Askar Almatov
+    Copyright (C) 2017, 2018 Askar Almatov
 
     This file is part of Libiclass. 
     
@@ -24,9 +24,9 @@
 
 using namespace iclass;
 
-const unsigned  SLEEP_INTERVAL_( 30 );          // milliseconds
-const unsigned  FLUSH_INTERVAL_( 100 );         // milliseconds
-const unsigned  WRITE_BUFFER_SIZE_( 512 );      // bytes
+const unsigned  SLEEP_INTERVAL_     ( 30 );         // milliseconds
+const unsigned  FLUSH_INTERVAL_     ( 100 );        // milliseconds
+const unsigned  WRITE_BUFFER_SIZE_  ( 1024 );       // bytes
 
 /**************************************************************************************************************/
 LoggerQueue::LoggerQueue( unsigned ringSize ) :

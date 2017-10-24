@@ -2,7 +2,7 @@
 ****************************************************************************************************************
 ****************************************************************************************************************
 
-    Copyright (C) 2017 Askar Almatov
+    Copyright (C) 2017, 2018 Askar Almatov
 
     This file is part of Libiclass. 
     
@@ -19,14 +19,18 @@
 */
 
 #include <cstdint>
+#include <cstdio>
 #include <Arduino.h>
 #include "qtr8a.h"
 
+using namespace std;
 using namespace iclass;
 
-const int       STEP( 2375 );           // micrometers
-const int       DIVIDER( 1000 );        // micrometers to millimeters
-const uint32_t  FULL( (0x1<<29) - 1 );
+const int       SENSORS_SPACE_      ( 9500 );                           // micrometers
+const int       POOR_RANGE_         ( 20 );                             // percentage
+
+const int       LEFT_EDGE_BOUND_    ( -(SENSORS_SPACE_ * 7) >> 1 );
+const int       RIGHT_EDGE_BOUND_   ( (SENSORS_SPACE_ * 7) >> 1 );
 
 /**************************************************************************************************************/
 Qtr8a::Qtr8a
@@ -39,14 +43,13 @@ Qtr8a::Qtr8a
     uint8_t     pin6,
     uint8_t     pin7,
     uint8_t     pin8,
-    int         mmLineWidth,
-    int         threshold,
+    int         lineWidth,
+    int         readBits,
     bool        inverse
 ) :
-    stepsLineWidth_( (mmLineWidth*DIVIDER) / STEP ),
-    threshold_( threshold ),
-    inverse_( inverse ),
-    bits_( FULL )
+    lineWidth_( lineWidth ),
+    readRange_( 1 << readBits ),
+    inverse_( inverse )
 {
     pins_[ 0 ] = pin1;
     pins_[ 1 ] = pin2;
@@ -57,152 +60,75 @@ Qtr8a::Qtr8a
     pins_[ 6 ] = pin7;
     pins_[ 7 ] = pin8;
 
-    pinMode( pins_[0], INPUT );
-    pinMode( pins_[1], INPUT );
-    pinMode( pins_[2], INPUT );
-    pinMode( pins_[3], INPUT );
-    pinMode( pins_[4], INPUT );
-    pinMode( pins_[5], INPUT );
-    pinMode( pins_[6], INPUT );
-    pinMode( pins_[7], INPUT );
+    for ( int i = 0; i < 8; ++i )
+    {
+        pinMode( pins_[i], INPUT );
+    }
 }
 
 /**************************************************************************************************************/
 void
 Qtr8a::read()
 {
-    raw_[ 0 ] = analogRead( pins_[0] );
-    raw_[ 4 ] = analogRead( pins_[1] );
-    raw_[ 8 ] = analogRead( pins_[2] );
-    raw_[ 12 ] = analogRead( pins_[3] );
-    raw_[ 16 ] = analogRead( pins_[4] );
-    raw_[ 20 ] = analogRead( pins_[5] );
-    raw_[ 24 ] = analogRead( pins_[6] );
-    raw_[ 28 ] = analogRead( pins_[7] );
+    int     minimum( readRange_ - 1 );
+    int     maximum( 0 );
 
-    raw_[ 2 ] = ( raw_[0] + raw_[4] ) >> 1;
-    raw_[ 6 ] = ( raw_[4] + raw_[8] ) >> 1;
-    raw_[ 10 ] = ( raw_[8] + raw_[12] ) >> 1;
-    raw_[ 14 ] = ( raw_[12] + raw_[16] ) >> 1;
-    raw_[ 18 ] = ( raw_[16] + raw_[20] ) >> 1;
-    raw_[ 22 ] = ( raw_[20] + raw_[24] ) >> 1;
-    raw_[ 26 ] = ( raw_[24] + raw_[28] ) >> 1;
-
-    raw_[ 1 ] = ( raw_[0] + raw_[2] ) >> 1;
-    raw_[ 3 ] = ( raw_[2] + raw_[4] ) >> 1;
-    raw_[ 5 ] = ( raw_[4] + raw_[6] ) >> 1;
-    raw_[ 7 ] = ( raw_[6] + raw_[8] ) >> 1;
-    raw_[ 9 ] = ( raw_[8] + raw_[10] ) >> 1;
-    raw_[ 11 ] = ( raw_[10] + raw_[12] ) >> 1;
-    raw_[ 13 ] = ( raw_[12] + raw_[14] ) >> 1;
-    raw_[ 15 ] = ( raw_[14] + raw_[16] ) >> 1;
-    raw_[ 17 ] = ( raw_[16] + raw_[18] ) >> 1;
-    raw_[ 19 ] = ( raw_[18] + raw_[20] ) >> 1;
-    raw_[ 21 ] = ( raw_[20] + raw_[22] ) >> 1;
-    raw_[ 23 ] = ( raw_[22] + raw_[24] ) >> 1;
-    raw_[ 25 ] = ( raw_[24] + raw_[26] ) >> 1;
-    raw_[ 27 ] = ( raw_[26] + raw_[28] ) >> 1;
-
-    bits_ = 0;
-    bits_ |= ( raw_[0] > threshold_ ) ^ inverse_;
-    bits_ |= ( (raw_[1] > threshold_) ^ inverse_ ) << 1;
-    bits_ |= ( (raw_[2] > threshold_) ^ inverse_ ) << 2;
-    bits_ |= ( (raw_[3] > threshold_) ^ inverse_ ) << 3;
-    bits_ |= ( (raw_[4] > threshold_) ^ inverse_ ) << 4;
-    bits_ |= ( (raw_[5] > threshold_) ^ inverse_ ) << 5;
-    bits_ |= ( (raw_[6] > threshold_) ^ inverse_ ) << 6;
-    bits_ |= ( (raw_[7] > threshold_) ^ inverse_ ) << 7;
-    bits_ |= ( (raw_[8] > threshold_) ^ inverse_ ) << 8;
-    bits_ |= ( (raw_[9] > threshold_) ^ inverse_ ) << 9;
-    bits_ |= ( (raw_[10] > threshold_) ^ inverse_ ) << 10;
-    bits_ |= ( (raw_[11] > threshold_) ^ inverse_ ) << 11;
-    bits_ |= ( (raw_[12] > threshold_) ^ inverse_ ) << 12;
-    bits_ |= ( (raw_[13] > threshold_) ^ inverse_ ) << 13;
-    bits_ |= ( (raw_[14] > threshold_) ^ inverse_ ) << 14;
-    bits_ |= ( (raw_[15] > threshold_) ^ inverse_ ) << 15;
-    bits_ |= ( (raw_[16] > threshold_) ^ inverse_ ) << 16;
-    bits_ |= ( (raw_[17] > threshold_) ^ inverse_ ) << 17;
-    bits_ |= ( (raw_[18] > threshold_) ^ inverse_ ) << 18;
-    bits_ |= ( (raw_[19] > threshold_) ^ inverse_ ) << 19;
-    bits_ |= ( (raw_[20] > threshold_) ^ inverse_ ) << 20;
-    bits_ |= ( (raw_[21] > threshold_) ^ inverse_ ) << 21;
-    bits_ |= ( (raw_[22] > threshold_) ^ inverse_ ) << 22;
-    bits_ |= ( (raw_[23] > threshold_) ^ inverse_ ) << 23;
-    bits_ |= ( (raw_[24] > threshold_) ^ inverse_ ) << 24;
-    bits_ |= ( (raw_[25] > threshold_) ^ inverse_ ) << 25;
-    bits_ |= ( (raw_[26] > threshold_) ^ inverse_ ) << 26;
-    bits_ |= ( (raw_[27] > threshold_) ^ inverse_ ) << 27;
-    bits_ |= ( (raw_[28] > threshold_) ^ inverse_ ) << 28;
-}
-
-/**************************************************************************************************************/
-uint32_t
-Qtr8a::bits() const
-{
-    return bits_;
-}
-
-/**************************************************************************************************************/
-int
-Qtr8a::leftEdge() const
-{
-    int     edge( -14 );
-
-    for ( uint32_t mask = 0x1<<28; mask && !(bits_&mask); mask >>= 1 )
+    for ( int i = 0; i < 8; ++i )
     {
-        ++edge;
+        int     raw( analogRead(pins_[i]) );
+
+        raws_[ i ] = raw;
+        
+        if ( minimum > raw )
+        {
+            minimum = raw;
+        }
+
+        if ( maximum < raw )
+        {
+            maximum = raw;
+        }
     }
 
-    return edge;
-}
+    int     range( maximum - minimum );
 
-/**************************************************************************************************************/
-int
-Qtr8a::rightEdge() const
-{
-    int     edge( 14 );
-    
-    for ( uint32_t mask = 0x1; mask && !(bits_&mask); mask <<= 1 )
-    {
-        --edge;
-    }
-
-    return edge;
+    threshold_ = minimum + ( range << 2 ) / 5;
+    relativeRange_ = range * 100 / readRange_;
 }
 
 /**************************************************************************************************************/
 int
 Qtr8a::deviation() const
 {
-    if ( bits_ == 0 )
+    if ( relativeRange_ <= POOR_RANGE_ )
     {
         return 0;
     }
 
-    int     redge( rightEdge() );
-    int     ledge( leftEdge() );
+    int     redge( rightEdge_() );
+    int     ledge( leftEdge_() );
 
-    if ( redge == 14 )
+    if ( redge == RIGHT_EDGE_BOUND_ )
     {
-        if ( redge - ledge < stepsLineWidth_ )
+        if ( redge - ledge < lineWidth_ )
         {
-            return ledge + ( stepsLineWidth_ >> 1 );
+            return ledge + ( lineWidth_ >> 1 );
         }
-        else if ( ledge > -14 )
+        else if ( ledge > LEFT_EDGE_BOUND_ )
         {
-            return redge - ( stepsLineWidth_ >> 1 );
+            return redge - ( lineWidth_ >> 1 );
         }
     }
 
-    if ( ledge == -14 )
+    if ( ledge == LEFT_EDGE_BOUND_ )
     {
-        if ( redge - ledge < stepsLineWidth_ )
+        if ( redge - ledge < lineWidth_ )
         {
-            return redge - ( stepsLineWidth_ >> 1 );
+            return redge - ( lineWidth_ >> 1 );
         }
-        else if ( redge < 14 )
+        else if ( redge < RIGHT_EDGE_BOUND_ )
         {
-            return ledge + ( stepsLineWidth_ >> 1 );
+            return ledge + ( lineWidth_ >> 1 );
         }
     }
     
@@ -213,12 +139,93 @@ Qtr8a::deviation() const
 bool
 Qtr8a::isEmpty() const
 {
-    return bits_ == 0;
+    return ( relativeRange_ <= POOR_RANGE_ ) && ( threshold_ <= (readRange_ >> 1) );
 }
 
 /**************************************************************************************************************/
 bool
 Qtr8a::isFull() const
 {
-    return bits_ == FULL;
+    return ( relativeRange_ <= POOR_RANGE_ ) && ( threshold_ > (readRange_ >> 1) );
 }
+
+/**************************************************************************************************************/
+const char*
+Qtr8a::dump() const
+{
+    snprintf
+    (
+        dumpBuffer_,
+        sizeof( dumpBuffer_ ),
+        "[%d] %d %d %d %d %d %d %d %d [%d%%]",
+        threshold_,
+        raws_[ 7 ],
+        raws_[ 6 ],
+        raws_[ 5 ],
+        raws_[ 4 ],
+        raws_[ 3 ],
+        raws_[ 2 ],
+        raws_[ 1 ],
+        raws_[ 0 ],
+        relativeRange_
+    );
+
+    return dumpBuffer_;
+}
+
+/**************************************************************************************************************/
+int
+Qtr8a::leftEdge_() const
+{
+    int     edge( LEFT_EDGE_BOUND_ );
+    int     prev( raws_[7] );
+
+    if ( (prev < threshold_) ^ inverse_ )
+    {
+        const int*  next( raws_ + 6 );
+
+        while ( next >= raws_ )
+        {
+            if ( (*next >= threshold_) ^ inverse_ )
+            {
+                edge += ( threshold_ - prev ) * SENSORS_SPACE_ / ( *next - prev );
+
+                break;
+            }
+
+            edge += SENSORS_SPACE_;
+            prev = *next--;
+        }
+    }
+
+    return edge;
+}
+
+/**************************************************************************************************************/
+int
+Qtr8a::rightEdge_() const
+{
+    int     edge( RIGHT_EDGE_BOUND_ );
+    int     prev( raws_[0] );
+
+    if ( (prev < threshold_) ^ inverse_ )
+    {
+        const int*  next( raws_ + 1 );
+
+        while ( next <= raws_ + 7 )
+        {
+            if ( (*next >= threshold_) ^ inverse_ )
+            {
+                edge -= ( threshold_ - prev ) * SENSORS_SPACE_ / ( *next - prev );
+
+                break;
+            }
+
+            edge -= SENSORS_SPACE_;
+            prev = *next++;
+        }
+    }
+
+    return edge;
+}
+

@@ -2,7 +2,7 @@
 ****************************************************************************************************************
 ****************************************************************************************************************
 
-    Copyright (C) 2017 Askar Almatov
+    Copyright (C) 2017, 2018 Askar Almatov
 
     This file is part of Libiclass. 
     
@@ -38,27 +38,30 @@ namespace iclass
                                             uint8_t     pin6,
                                             uint8_t     pin7,
                                             uint8_t     pin8,
-                                            int         mmLineWidth,
-                                            int         threshold = 550,
+                                            int         lineWidth,          // micrometers
+                                            int         readBits = 10,
                                             bool        inverse = false
                                         );
 
         void                            read();
-        uint32_t                        bits() const;
-        int                             leftEdge() const;
-        int                             rightEdge() const;
-        int                             deviation() const;
+        int                             deviation() const;                  // micrometers
         bool                            isEmpty() const;
         bool                            isFull() const;
+        const char*                     dump() const;
 
     protected:
 
+        int                             leftEdge_() const;
+        int                             rightEdge_() const;
+
         uint8_t                         pins_[ 8 ];
-        const int                       stepsLineWidth_;
-        const int                       threshold_;
+        const int                       lineWidth_;
+        const int                       readRange_;
         const bool                      inverse_;
-        int                             raw_[ 29 ];
-        uint32_t                        bits_;
+        int                             raws_[ 8 ];
+        int                             threshold_;
+        int                             relativeRange_;
+        mutable char                    dumpBuffer_[ 54];
     };
 }
 
