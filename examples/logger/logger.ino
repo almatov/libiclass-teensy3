@@ -8,10 +8,10 @@
 
 using namespace iclass;
 
-const unsigned  LEDTASK_STACK_SIZE( 64 );
-const unsigned  SOURCETASK_STACK_SIZE( 256 );
-const uint8_t   SPI_CS_PIN( 10 );               // used for external SD card only
-const uint8_t   SPI_SCK_PIN( 14 );              // used for external SD card only
+const unsigned  LEDTASK_STACK_SIZE      ( 64 );
+const unsigned  SOURCETASK_STACK_SIZE   ( 256 );
+const uint8_t   SPI_CS_PIN              ( 10 );     // used for external SD card only
+const uint8_t   SPI_SCK_PIN             ( 14 );     // used for external SD card only
 
 class LedTask : public ChTask<LEDTASK_STACK_SIZE>
 {

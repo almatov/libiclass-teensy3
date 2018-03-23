@@ -24,10 +24,9 @@ last set.
 **MedianFilter** class is a filter of incoming data based on computing of median value
 of last set.
 
-**MotorRegulator** class computes PWM value for target rotary per minute speed.
-
 **Qtr8a** class is tested with Pololu QTR-8A reflectance sensor array. It can compute
-deviation of position relative the center of the line.
+deviation of position relative the center of the line. The deviation accuracy is about
+100 micrometers. The class uses adaptive threshold to discriminate black and white.
 
 **QuadratureEncoder** class is tested with Pololu magnetic encoder kit.
 
