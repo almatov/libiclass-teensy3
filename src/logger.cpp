@@ -18,15 +18,13 @@
     <http://www.gnu.org/licenses/>.
 */
 
-#include <SD.h>
-#include <SPI.h>
 #include "logger.h"
 
 using namespace iclass;
 
-const unsigned  SLEEP_INTERVAL_     ( 30 );         // milliseconds
-const unsigned  FLUSH_INTERVAL_     ( 100 );        // milliseconds
-const unsigned  WRITE_BUFFER_SIZE_  ( 1024 );       // bytes
+const unsigned  SLEEP_INTERVAL_     ( 20 );         // milliseconds
+const unsigned  FLUSH_INTERVAL_     ( 200 );        // milliseconds
+const unsigned  WRITE_BUFFER_SIZE_  ( 512 );        // bytes
 
 /**************************************************************************************************************/
 LoggerQueue::LoggerQueue( unsigned ringSize ) :
@@ -127,37 +125,16 @@ LoggerQueue::write( uint8_t byte )
 }
 
 /**************************************************************************************************************/
-Logger::Logger( const char* fileName, unsigned ringSize ) :
+Logger::Logger( SdFile* file, unsigned ringSize ) :
     LoggerQueue( ringSize ),
-    fileName_( fileName ),
-    csPin_( BUILTIN_SDCARD )
+    file_( file )
 {
-}
-
-/**************************************************************************************************************/
-void
-Logger::setSpiPins( uint8_t csPin, uint8_t sckPin )
-{
-    csPin_ = csPin;
-    sckPin_ = sckPin;
 }
 
 /**************************************************************************************************************/
 void
 Logger::routine()
 {
-    if ( csPin_ != BUILTIN_SDCARD )
-    {
-        // SPI mode
-        pinMode( csPin_, OUTPUT );
-        SPI.setSCK( sckPin_ );
-        SPI.begin();
-    }
-
-    SD.begin( csPin_ );
-
-    File  logFile( SD.open(fileName_, FILE_WRITE) );
-
     for ( ;; )
     {
         unsigned long   cycleTime( millis() );
@@ -165,13 +142,13 @@ Logger::routine()
         bool            isExhausted;
         unsigned        nBytes( pull(buffer, sizeof(buffer), isExhausted) );
 
-        logFile.write( buffer, nBytes );
+        file_->write( buffer, nBytes );
 
         static unsigned long  lastFlushTime( 0 );
 
         if ( cycleTime >= lastFlushTime + FLUSH_INTERVAL_ )
         {
-            logFile.flush();
+            file_->flush();
             lastFlushTime = cycleTime;
         }
 
@@ -192,6 +169,4 @@ Logger::routine()
             }
         }
     }
-
-    logFile.close();
 }

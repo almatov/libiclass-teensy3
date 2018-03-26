@@ -26,11 +26,11 @@
 using namespace std;
 using namespace iclass;
 
-const int       SENSORS_SPACE_      ( 9500 );                           // micrometers
-const int       POOR_RANGE_         ( 20 );                             // percentage
+const int       SENSORS_PITCH_      ( 9500 );   // micrometers
+const int       POOR_RANGE_         ( 20 );     // percentage
 
-const int       LEFT_EDGE_BOUND_    ( -(SENSORS_SPACE_ * 7) >> 1 );
-const int       RIGHT_EDGE_BOUND_   ( (SENSORS_SPACE_ * 7) >> 1 );
+const int       LEFT_EDGE_BOUND_    ( -(SENSORS_PITCH_ * 7) >> 1 );
+const int       RIGHT_EDGE_BOUND_   ( (SENSORS_PITCH_ * 7) >> 1 );
 
 /**************************************************************************************************************/
 Qtr8a::Qtr8a
@@ -188,12 +188,12 @@ Qtr8a::leftEdge_() const
         {
             if ( (*next >= threshold_) ^ inverse_ )
             {
-                edge += ( threshold_ - prev ) * SENSORS_SPACE_ / ( *next - prev );
+                edge += ( threshold_ - prev ) * SENSORS_PITCH_ / ( *next - prev );
 
                 break;
             }
 
-            edge += SENSORS_SPACE_;
+            edge += SENSORS_PITCH_;
             prev = *next--;
         }
     }
@@ -216,12 +216,12 @@ Qtr8a::rightEdge_() const
         {
             if ( (*next >= threshold_) ^ inverse_ )
             {
-                edge -= ( threshold_ - prev ) * SENSORS_SPACE_ / ( *next - prev );
+                edge -= ( threshold_ - prev ) * SENSORS_PITCH_ / ( *next - prev );
 
                 break;
             }
 
-            edge -= SENSORS_SPACE_;
+            edge -= SENSORS_PITCH_;
             prev = *next++;
         }
     }

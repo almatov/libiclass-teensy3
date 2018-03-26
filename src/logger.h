@@ -2,7 +2,7 @@
 ****************************************************************************************************************
 ****************************************************************************************************************
 
-    Copyright (C) 2017 Askar Almatov
+    Copyright (C) 2017, 2018 Askar Almatov
 
     This file is part of Libiclass. 
     
@@ -22,6 +22,7 @@
 #define LIBICLASS_LOGGER_H_ 1
 
 #include <Print.h>
+#include <SdFat.h>
 #include "common.h"
 #include "task.h"
 
@@ -58,17 +59,13 @@ namespace iclass
 
     public:
 
-                                        Logger( const char* fileName, unsigned ringSize=4096 );
-
-        void                            setSpiPins( uint8_t csPin, uint8_t sckPin );
+                                        Logger( SdFile* file, unsigned ringSize=4096 );
 
         virtual void                    routine();
 
     protected:
 
-        const char*                     fileName_;
-        uint8_t                         csPin_;
-        uint8_t                         sckPin_;
+        SdFile*                         file_;
     };
 }
 
