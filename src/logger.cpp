@@ -18,12 +18,13 @@
     <http://www.gnu.org/licenses/>.
 */
 
+#include <SdFat.h>
 #include "logger.h"
 
 using namespace iclass;
 
 const unsigned  SLEEP_INTERVAL_     ( 20 );         // milliseconds
-const unsigned  FLUSH_INTERVAL_     ( 200 );        // milliseconds
+const unsigned  FLUSH_INTERVAL_     ( 300 );        // milliseconds
 const unsigned  WRITE_BUFFER_SIZE_  ( 512 );        // bytes
 
 /**************************************************************************************************************/
@@ -125,9 +126,9 @@ LoggerQueue::write( uint8_t byte )
 }
 
 /**************************************************************************************************************/
-Logger::Logger( SdFile* file, unsigned ringSize ) :
+Logger::Logger( const char* fileName, unsigned ringSize ) :
     LoggerQueue( ringSize ),
-    file_( file )
+    fileName_( fileName )
 {
 }
 
@@ -135,6 +136,10 @@ Logger::Logger( SdFile* file, unsigned ringSize ) :
 void
 Logger::routine()
 {
+    SdFile  logFile;
+
+    logFile.open( fileName_, O_WRONLY | O_APPEND | O_CREAT );
+
     for ( ;; )
     {
         unsigned long   cycleTime( millis() );
@@ -142,13 +147,13 @@ Logger::routine()
         bool            isExhausted;
         unsigned        nBytes( pull(buffer, sizeof(buffer), isExhausted) );
 
-        file_->write( buffer, nBytes );
+        logFile.write( buffer, nBytes );
 
         static unsigned long  lastFlushTime( 0 );
 
         if ( cycleTime >= lastFlushTime + FLUSH_INTERVAL_ )
         {
-            file_->flush();
+            logFile.flush();
             lastFlushTime = cycleTime;
         }
 
@@ -169,4 +174,6 @@ Logger::routine()
             }
         }
     }
+
+    logFile.close();
 }

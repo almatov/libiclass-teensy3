@@ -22,7 +22,6 @@
 #define LIBICLASS_LOGGER_H_ 1
 
 #include <Print.h>
-#include <SdFat.h>
 #include "common.h"
 #include "task.h"
 
@@ -59,13 +58,13 @@ namespace iclass
 
     public:
 
-                                        Logger( SdFile* file, unsigned ringSize=4096 );
+                                        Logger( const char* fileName, unsigned ringSize=8192 );
 
         virtual void                    routine();
 
     protected:
 
-        SdFile*                         file_;
+        const char*                     fileName_;
     };
 }
 

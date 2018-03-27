@@ -4,32 +4,33 @@
 */
 
 #include <ChRt.h>
+#include <SdFat.h>
 #include <logger.h>
 
 using namespace iclass;
 
-const unsigned  LEDTASK_STACK_SIZE      ( 64 );
-const unsigned  SOURCETASK_STACK_SIZE   ( 256 );
-const uint8_t   SPI_CS_PIN              ( 10 );     // used for external SD card only
-const uint8_t   SPI_SCK_PIN             ( 14 );     // used for external SD card only
+const unsigned  LEDBLINKER_STACK_SIZE   ( 64 );     // bytes
+const unsigned  LOGFEEDER_STACK_SIZE    ( 256 );    // bytes
+const uint8_t   SPI_CS_PIN              ( 10 );     // external SD card SPI pin
+const uint8_t   SPI_SCK_PIN             ( 14 );     // external SD card SPI pin
 
-class LedTask : public ChTask<LEDTASK_STACK_SIZE>
+class LedBlinker : public ChTask<LEDBLINKER_STACK_SIZE>
 {
     virtual void    routine();
 };
 
-class SourceTask : public ChTask<SOURCETASK_STACK_SIZE>
+class LogFeeder : public ChTask<LOGFEEDER_STACK_SIZE>
 {
     virtual void    routine();
 };
 
-LedTask     ledTask;
-Logger      logger( "test.log" );
-SourceTask  source;
+LedBlinker  ledBlinker;
+LogFeeder   logFeeder;
+Logger      logger( "test.log", 16384 );
 
 /**************************************************************************************************************/
 void
-LedTask::routine()
+LedBlinker::routine()
 {
     while ( true )
     {
@@ -42,7 +43,7 @@ LedTask::routine()
 
 /**************************************************************************************************************/
 void
-SourceTask::routine()
+LogFeeder::routine()
 {
    while ( true )
     {
@@ -54,7 +55,18 @@ SourceTask::routine()
         ::logger.print( '\t' );
         ::logger.print( tm - oldTm );
         ::logger.print( '\t' );
-        ::logger.println( tm );
+        ::logger.print( tm );
+        ::logger.print( '\t' );
+        ::logger.print( ::logger.overflows() );
+        ::logger.print( '\t' );
+
+        for ( int i = 0; i < 13; ++i )
+        {
+            ::logger.print( "logfiller" );
+        }
+
+        ::logger.print( '\t' );
+        ::logger.println( micros() - tm );
         oldTm = tm;
 
         chThdSleepMilliseconds( 1 );
@@ -66,9 +78,9 @@ void
 chSetup()
 {
     ::logger.start();
-    ::ledTask.start();
+    ::ledBlinker.start( NORMALPRIO + 2 );
     chThdSleepMilliseconds( 50 );
-    ::source.start( NORMALPRIO + 2 );
+    ::logFeeder.start( NORMALPRIO + 2 );
 }
 
 /**************************************************************************************************************/
@@ -78,9 +90,23 @@ setup()
     Serial.begin( 115200 );
     pinMode( LED_BUILTIN, OUTPUT );
 
-#if defined( __MK20DX256__ ) || defined( __MK20DX128__ )
+#if defined( __MK20DX128__ )
 
-    ::logger.setSpiPins( SPI_CS_PIN, SPI_SCK_PIN );     // need for external SD card only
+    #error Teensy 3.0 has too small RAM size
+
+#elif defined( __MK20DX256__ )
+
+    static SdFat        sd;
+
+    pinMode( SPI_CS_PIN, OUTPUT );
+    SPI.setSCK( SPI_SCK_PIN );
+    sd.begin( SPI_CS_PIN );
+
+#else
+
+    static SdFatSdioEX  sd;
+
+    sd.begin();
 
 #endif
 
