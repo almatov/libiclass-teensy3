@@ -25,16 +25,17 @@ using namespace iclass;
 
 const unsigned  SLEEP_INTERVAL_     ( 20 );         // milliseconds
 const unsigned  FLUSH_INTERVAL_     ( 300 );        // milliseconds
-const unsigned  WRITE_BUFFER_SIZE_  ( 512 );        // bytes
 
 /**************************************************************************************************************/
 LoggerQueue::LoggerQueue( unsigned ringSize ) :
     ringSize_( ringSize ),
+    size_a_( 0 ),
     overflows_a_( 0 )
 {
-    ring_c_ = new uint8_t[ ringSize_ ];
-    front_c_ = ring_c_;
-    back_c_ = ring_c_;
+    ring_ = new uint8_t[ ringSize_ ];
+    front_c_ = ring_;
+    back_c_ = ring_;
+    backAck_c_ = ring_;
 }
 
 /**************************************************************************************************************/
@@ -42,52 +43,14 @@ LoggerQueue::~LoggerQueue()
 {
     this->lock();
 
-    delete[] ring_c_;
+    delete[] ring_;
 }
 
 /**************************************************************************************************************/
 unsigned
-LoggerQueue::pull( uint8_t* buffer, unsigned bufferSize, bool& isExhausted )
+LoggerQueue::size() const
 {
-    unsigned  nBytes( 0 );
-
-    this->lock();
-
-    if ( front_c_ != back_c_ )
-    {
-        if ( front_c_ > back_c_ )
-        {
-            nBytes = front_c_ - back_c_;
-        }
-        else
-        {
-            nBytes = ringSize_ - ( back_c_ - ring_c_ );
-        }
-
-        if ( nBytes > bufferSize )
-        {
-            nBytes = bufferSize;
-        }
-
-        memcpy( buffer, back_c_, nBytes );
-        back_c_ += nBytes;
-
-        if ( back_c_ >= ring_c_ + ringSize_ )
-        {
-            back_c_ = ring_c_;
-        }
-
-        if ( front_c_ == back_c_ )
-        {
-            front_c_ = back_c_ = ring_c_;
-        }
-    }
-
-    isExhausted = ( front_c_ == back_c_ );
-
-    this->unlock();
-
-    return nBytes;
+    return size_a_;
 }
 
 /**************************************************************************************************************/
@@ -104,25 +67,78 @@ LoggerQueue::write( uint8_t byte )
     this->lock();
 
     *front_c_++ = byte;
+    ++size_a_;
 
-    if ( front_c_ >= ring_c_ + ringSize_ )
+    if ( front_c_ >= ring_ + ringSize_ )
     {
-        front_c_ = ring_c_;
+        front_c_ = ring_;
     }
 
-    if ( front_c_ == back_c_ )
+    if ( front_c_ == backAck_c_ )
     {
         ++overflows_a_;
 
-        if ( ++back_c_ >= ring_c_ + ringSize_ )
+        if ( backAck_c_ == back_c_ )
         {
-            back_c_ = ring_c_;
+            --size_a_;
+
+            if ( ++back_c_ >= ring_ + ringSize_ )
+            {
+                back_c_ = ring_;
+            }
+        }
+
+        if ( ++backAck_c_ >= ring_ + ringSize_ )
+        {
+            backAck_c_ = ring_;
         }
     }
 
     this->unlock();
 
     return 1;
+}
+
+/**************************************************************************************************************/
+unsigned
+LoggerQueue::pull_( uint8_t** fragment )
+{
+    unsigned  nBytes( 0 );
+
+    this->lock();
+
+    if ( front_c_ != back_c_ )
+    {
+        *fragment = back_c_;
+
+        if ( front_c_ > back_c_ )
+        {
+            nBytes = front_c_ - back_c_;
+            back_c_ += nBytes;
+        }
+        else
+        {
+            nBytes = ringSize_ - ( back_c_ - ring_ );
+            back_c_ = ring_;
+        }
+
+        size_a_ -= nBytes;
+    }
+
+    this->unlock();
+
+    return nBytes;
+}
+
+/**************************************************************************************************************/
+void
+LoggerQueue::pullAck_()
+{
+    this->lock();
+
+    backAck_c_ = back_c_;
+
+    this->unlock();
 }
 
 /**************************************************************************************************************/
@@ -140,37 +156,42 @@ Logger::routine()
 
     logFile.open( fileName_, O_WRONLY | O_APPEND | O_CREAT );
 
-    for ( ;; )
+    unsigned long   lastFlushTime( millis() );
+    uint8_t*        fragment;
+
+    while ( true )
     {
-        unsigned long   cycleTime( millis() );
-        static uint8_t  buffer[ WRITE_BUFFER_SIZE_ ];
-        bool            isExhausted;
-        unsigned        nBytes( pull(buffer, sizeof(buffer), isExhausted) );
+        unsigned long   cycleStartTime( millis() );
+        unsigned        nBytes( pull_(&fragment) );
 
-        logFile.write( buffer, nBytes );
-
-        static unsigned long  lastFlushTime( 0 );
-
-        if ( cycleTime >= lastFlushTime + FLUSH_INTERVAL_ )
+        if ( nBytes > 0 )
         {
-            logFile.flush();
-            lastFlushTime = cycleTime;
+            logFile.write( fragment, nBytes );
+            pullAck_();
         }
 
-        if ( isExhausted )
+        if ( size_a_ >= (ringSize_ >> 3) )
         {
-            if ( isStopped() )
-            {
-                break;
-            }
-            else
-            {
-                unsigned  pastDuration( millis() - cycleTime );
+            continue;
+        }
 
-                if ( pastDuration < SLEEP_INTERVAL_ )
-                {
-                    chThdSleepMilliseconds( SLEEP_INTERVAL_ - pastDuration ); 
-                }
+        if ( cycleStartTime >= lastFlushTime + FLUSH_INTERVAL_ )
+        {
+            logFile.flush();
+            lastFlushTime = cycleStartTime;
+        }
+
+        if ( isStopped() )
+        {
+            break;
+        }
+        else
+        {
+            unsigned    pastDuration( millis() - cycleStartTime );
+
+            if ( pastDuration < SLEEP_INTERVAL_ )
+            {
+                chThdSleepMilliseconds( SLEEP_INTERVAL_ - pastDuration ); 
             }
         }
     }

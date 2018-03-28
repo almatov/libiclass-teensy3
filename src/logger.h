@@ -36,19 +36,24 @@ namespace iclass
                                         LoggerQueue( unsigned ringSize );
                                         ~LoggerQueue();
 
-        unsigned                        pull( uint8_t* buffer, unsigned bufferSize, bool& isExhausted );
+        unsigned                        size() const;
         unsigned                        overflows() const;
 
         virtual size_t                  write( uint8_t );
 
     protected:
 
-        const unsigned                  ringSize_;
+        unsigned                        pull_( uint8_t** offset );
+        void                            pullAck_();
 
-        uint8_t*                        ring_c_;
+        const unsigned                  ringSize_;
+        uint8_t*                        ring_;
+
         uint8_t*                        front_c_;
         uint8_t*                        back_c_;
+        uint8_t*                        backAck_c_;
 
+        std::atomic<unsigned>           size_a_;    
         std::atomic<unsigned>           overflows_a_;    
     };
 

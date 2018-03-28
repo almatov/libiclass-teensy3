@@ -5,6 +5,8 @@ This is the set of C++ classes.
 It had been tested with Teensy-3.x boards. But it should work with other boards
 except QuadratureEncoder class.
 
+SD card interaction uses SdFat library https://github.com/greiman/SdFat.git.
+
 Multitasking is based on ChRt project https://github.com/greiman/ChRt.git. You need
 patch the ChRt library with command
 
@@ -15,8 +17,7 @@ patch the ChRt library with command
 **Common** class is a base class for all classes that assume concurrent access.
 
 **Logger** class is SD card logger with simple Serial like interface. It was written
-as a parallel task to avoid jitter increasing of main thread. Builtin SD card works
-in SDIO mode.
+as a parallel task to avoid jitter increasing of main thread.
 
 **MeanFilter** class is a filter of incoming data based on computing of mean value of
 last set.

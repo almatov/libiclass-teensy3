@@ -57,10 +57,12 @@ LogFeeder::routine()
         ::logger.print( '\t' );
         ::logger.print( tm );
         ::logger.print( '\t' );
+        ::logger.print( ::logger.size() );
+        ::logger.print( '\t' );
         ::logger.print( ::logger.overflows() );
         ::logger.print( '\t' );
 
-        for ( int i = 0; i < 13; ++i )
+        for ( int i = 0; i < 12; ++i )
         {
             ::logger.print( "logfiller" );
         }
