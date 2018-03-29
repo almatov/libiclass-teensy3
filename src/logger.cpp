@@ -23,8 +23,9 @@
 
 using namespace iclass;
 
-const unsigned  SLEEP_INTERVAL_     ( 20 );         // milliseconds
+const unsigned  SLEEP_INTERVAL_     ( 30 );         // milliseconds
 const unsigned  FLUSH_INTERVAL_     ( 300 );        // milliseconds
+const unsigned  WRITE_BLOCK_SIZE_   ( 1024 );       // bytes
 
 /**************************************************************************************************************/
 LoggerQueue::LoggerQueue( unsigned ringSize ) :
@@ -35,7 +36,6 @@ LoggerQueue::LoggerQueue( unsigned ringSize ) :
     ring_ = new uint8_t[ ringSize_ ];
     front_c_ = ring_;
     back_c_ = ring_;
-    backAck_c_ = ring_;
 }
 
 /**************************************************************************************************************/
@@ -67,31 +67,24 @@ LoggerQueue::write( uint8_t byte )
     this->lock();
 
     *front_c_++ = byte;
-    ++size_a_;
 
     if ( front_c_ >= ring_ + ringSize_ )
     {
         front_c_ = ring_;
     }
 
-    if ( front_c_ == backAck_c_ )
+    if ( front_c_ == back_c_ )
     {
         ++overflows_a_;
 
-        if ( backAck_c_ == back_c_ )
+        if ( ++back_c_ >= ring_ + ringSize_ )
         {
-            --size_a_;
-
-            if ( ++back_c_ >= ring_ + ringSize_ )
-            {
-                back_c_ = ring_;
-            }
+            back_c_ = ring_;
         }
-
-        if ( ++backAck_c_ >= ring_ + ringSize_ )
-        {
-            backAck_c_ = ring_;
-        }
+    }
+    else
+    {
+        ++size_a_;
     }
 
     this->unlock();
@@ -101,7 +94,7 @@ LoggerQueue::write( uint8_t byte )
 
 /**************************************************************************************************************/
 unsigned
-LoggerQueue::pull_( uint8_t** fragment )
+LoggerQueue::pull_( uint8_t* block, unsigned blockSize )
 {
     unsigned  nBytes( 0 );
 
@@ -109,36 +102,33 @@ LoggerQueue::pull_( uint8_t** fragment )
 
     if ( front_c_ != back_c_ )
     {
-        *fragment = back_c_;
-
         if ( front_c_ > back_c_ )
         {
             nBytes = front_c_ - back_c_;
-            back_c_ += nBytes;
         }
         else
         {
             nBytes = ringSize_ - ( back_c_ - ring_ );
-            back_c_ = ring_;
         }
 
+        if ( nBytes > blockSize )
+        {
+            nBytes = blockSize;
+        }
+
+        memcpy( block, back_c_, nBytes );
+        back_c_ += nBytes;
         size_a_ -= nBytes;
+
+        if ( back_c_ >= ring_ + ringSize_ )
+        {
+            back_c_ = ring_;
+        }
     }
 
     this->unlock();
 
     return nBytes;
-}
-
-/**************************************************************************************************************/
-void
-LoggerQueue::pullAck_()
-{
-    this->lock();
-
-    backAck_c_ = back_c_;
-
-    this->unlock();
 }
 
 /**************************************************************************************************************/
@@ -156,29 +146,28 @@ Logger::routine()
 
     logFile.open( fileName_, O_WRONLY | O_APPEND | O_CREAT );
 
-    unsigned long   lastFlushTime( millis() );
-    uint8_t*        fragment;
+    uint8_t*        block( new uint8_t[WRITE_BLOCK_SIZE_] );
+    unsigned long   nextFlushTime( millis() + FLUSH_INTERVAL_ );
 
     while ( true )
     {
         unsigned long   cycleStartTime( millis() );
-        unsigned        nBytes( pull_(&fragment) );
+        unsigned        nBytes( pull_(block, WRITE_BLOCK_SIZE_) );
 
         if ( nBytes > 0 )
         {
-            logFile.write( fragment, nBytes );
-            pullAck_();
+            logFile.write( block, nBytes );
         }
 
-        if ( size_a_ >= (ringSize_ >> 3) )
+        if ( size_a_ >= WRITE_BLOCK_SIZE_ )
         {
             continue;
         }
 
-        if ( cycleStartTime >= lastFlushTime + FLUSH_INTERVAL_ )
+        if ( cycleStartTime >= nextFlushTime )
         {
             logFile.flush();
-            lastFlushTime = cycleStartTime;
+            nextFlushTime += FLUSH_INTERVAL_;
         }
 
         if ( isStopped() )
@@ -196,5 +185,6 @@ Logger::routine()
         }
     }
 
+    delete[] block;
     logFile.close();
 }

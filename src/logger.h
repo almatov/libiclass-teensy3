@@ -43,15 +43,13 @@ namespace iclass
 
     protected:
 
-        unsigned                        pull_( uint8_t** offset );
-        void                            pullAck_();
+        unsigned                        pull_( uint8_t* block, unsigned blockSize );
 
         const unsigned                  ringSize_;
         uint8_t*                        ring_;
 
         uint8_t*                        front_c_;
         uint8_t*                        back_c_;
-        uint8_t*                        backAck_c_;
 
         std::atomic<unsigned>           size_a_;    
         std::atomic<unsigned>           overflows_a_;    
