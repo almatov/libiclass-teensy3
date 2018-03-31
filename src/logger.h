@@ -22,6 +22,7 @@
 #define LIBICLASS_LOGGER_H_ 1
 
 #include <Print.h>
+
 #include "common.h"
 #include "task.h"
 
@@ -36,13 +37,14 @@ namespace iclass
                                         LoggerQueue( unsigned ringSize );
                                         ~LoggerQueue();
 
-        unsigned                        size() const;
+        unsigned                        queueSize() const;
         unsigned                        overflows() const;
 
         virtual size_t                  write( uint8_t );
 
     protected:
 
+        void                            initialShift_( uint8_t* swapBuffer, int shiftBytes );
         unsigned                        pull_( uint8_t* block, unsigned blockSize );
 
         const unsigned                  ringSize_;
@@ -51,7 +53,7 @@ namespace iclass
         uint8_t*                        front_c_;
         uint8_t*                        back_c_;
 
-        std::atomic<unsigned>           size_a_;    
+        std::atomic<unsigned>           queueSize_a_;    
         std::atomic<unsigned>           overflows_a_;    
     };
 
@@ -63,11 +65,19 @@ namespace iclass
 
                                         Logger( const char* fileName, unsigned ringSize=8192 );
 
+        unsigned long                   fileSize() const;
+        unsigned                        writes() const;
+        unsigned                        writeBytes() const;
+
         virtual void                    routine();
 
     protected:
 
         const char*                     fileName_;
+
+        std::atomic<unsigned long>      fileSize_a_;    
+        std::atomic<unsigned>           writes_a_;    
+        std::atomic<unsigned>           writeBytes_a_;    
     };
 }
 
