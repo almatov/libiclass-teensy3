@@ -19,6 +19,8 @@
 */
 
 #include <atomic>
+#include <Arduino.h>
+
 #include "quadratureencoder.h"
 
 using namespace iclass;

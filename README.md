@@ -5,7 +5,8 @@ This is the set of C++ classes.
 It had been tested with Teensy-3.x boards. But it should work with other boards
 except QuadratureEncoder class.
 
-SD card interaction uses SdFat library https://github.com/greiman/SdFat.git.
+SD card interaction uses SdFat library https://github.com/greiman/SdFat.git. That
+library accordingly depends on SPI library.
 
 Multitasking is based on ChRt project https://github.com/greiman/ChRt.git. You need
 patch the ChRt library with command

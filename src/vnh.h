@@ -21,7 +21,7 @@
 #ifndef LIBICLASS_VNH_H_
 #define LIBICLASS_VNH_H_ 1
 
-#include <Arduino.h>
+#include <cstdint>
 
 namespace iclass
 {

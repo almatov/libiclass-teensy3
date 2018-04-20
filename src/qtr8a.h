@@ -21,6 +21,8 @@
 #ifndef LIBICLASS_QTR8A_H_
 #define LIBICLASS_QTR8A_H_ 1
 
+#include <cstdint>
+
 namespace iclass
 {
     /**********************************************************************************************************/

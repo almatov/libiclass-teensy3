@@ -18,6 +18,8 @@
     <http://www.gnu.org/licenses/>.
 */
 
+#include <Arduino.h>
+
 #include "vnh.h"
 
 using namespace iclass;

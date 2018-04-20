@@ -18,6 +18,8 @@
     <http://www.gnu.org/licenses/>.
 */
 
+#include <Arduino.h>
+
 #include "tb6612.h"
 
 using namespace iclass;

@@ -21,7 +21,8 @@
 #ifndef LIBICLASS_QUADRATUREENCODER_H_
 #define LIBICLASS_QUADRATUREENCODER_H_ 1
 
-#include <Arduino.h>
+#include <cstdint>
+
 #include "encoder.h"
 
 namespace iclass
@@ -48,8 +49,8 @@ namespace iclass
     protected:
 
         const unsigned                  zeroInterval_;
-        volatile uint8_t *              pin1Register_;
-        volatile uint8_t *              pin2Register_;
+        volatile uint8_t*               pin1Register_;
+        volatile uint8_t*               pin2Register_;
         uint8_t                         pin1Bitmask_;
         uint8_t                         pin2Bitmask_;
         int                             state_;

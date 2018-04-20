@@ -21,7 +21,8 @@
 #ifndef LIBICLASS_ABSOLUTEENCODER_H_
 #define LIBICLASS_ABSOLUTEENCODER_H_ 1
 
-#include <Arduino.h>
+#include <cstdint>
+
 #include "encoder.h"
 
 namespace iclass

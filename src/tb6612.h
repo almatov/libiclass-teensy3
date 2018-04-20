@@ -21,7 +21,7 @@
 #ifndef LIBICLASS_TB6612_H_
 #define LIBICLASS_TB6612_H_ 1
 
-#include <Arduino.h>
+#include <cstdint>
 
 namespace iclass
 {

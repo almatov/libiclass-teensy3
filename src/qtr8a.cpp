@@ -18,9 +18,9 @@
     <http://www.gnu.org/licenses/>.
 */
 
-#include <cstdint>
 #include <cstdio>
 #include <Arduino.h>
+
 #include "qtr8a.h"
 
 using namespace std;

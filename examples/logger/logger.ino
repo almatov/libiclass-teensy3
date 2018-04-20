@@ -3,9 +3,9 @@
 ****************************************************************************************************************
 */
 
+#include <avr/sleep.h>
 #include <ChRt.h>
 #include <SdFat.h>
-#include <avr/sleep.h>
 
 #include <logger.h>
 
