@@ -47,7 +47,7 @@ Qtr8a::Qtr8a
     int         readBits,
     bool        inverse
 ) :
-    lineWidth_( lineWidth ),
+    lineWidth_( lineWidth * 1000 ),
     readRange_( 1 << readBits ),
     inverse_( inverse )
 {
@@ -97,42 +97,10 @@ Qtr8a::read()
 }
 
 /**************************************************************************************************************/
-int
+double
 Qtr8a::deviation() const
 {
-    if ( relativeRange_ <= POOR_RANGE_ )
-    {
-        return 0;
-    }
-
-    int     redge( rightEdge_() );
-    int     ledge( leftEdge_() );
-
-    if ( redge == RIGHT_EDGE_BOUND_ )
-    {
-        if ( redge - ledge < lineWidth_ )
-        {
-            return ledge + ( lineWidth_ >> 1 );
-        }
-        else if ( ledge > LEFT_EDGE_BOUND_ )
-        {
-            return redge - ( lineWidth_ >> 1 );
-        }
-    }
-
-    if ( ledge == LEFT_EDGE_BOUND_ )
-    {
-        if ( redge - ledge < lineWidth_ )
-        {
-            return redge - ( lineWidth_ >> 1 );
-        }
-        else if ( redge < RIGHT_EDGE_BOUND_ )
-        {
-            return ledge + ( lineWidth_ >> 1 );
-        }
-    }
-    
-    return ( ledge + redge ) >> 1;
+    return uDeviation_() / 1000.0;
 }
 
 /**************************************************************************************************************/
@@ -229,3 +197,33 @@ Qtr8a::rightEdge_() const
     return edge;
 }
 
+/**************************************************************************************************************/
+int
+Qtr8a::uDeviation_() const
+{
+    if ( relativeRange_ <= POOR_RANGE_ )
+    {
+        return 0;
+    }
+
+    int     redge( rightEdge_() );
+    int     ledge( leftEdge_() );
+
+    if ( redge == RIGHT_EDGE_BOUND_ )
+    {
+        if ( redge - ledge < lineWidth_ )
+        {
+            return ledge + ( lineWidth_ >> 1 );
+        }
+    }
+
+    if ( ledge == LEFT_EDGE_BOUND_ )
+    {
+        if ( redge - ledge < lineWidth_ )
+        {
+            return redge - ( lineWidth_ >> 1 );
+        }
+    }
+    
+    return ( ledge + redge ) >> 1;
+}

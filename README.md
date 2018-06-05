@@ -11,7 +11,7 @@ library accordingly depends on SPI library.
 Multitasking is based on ChRt project https://github.com/greiman/ChRt.git. You need
 patch the ChRt library with command
 
-	patch -p0 < ChRt.patch
+	patch -p0 < libiclass-teensy3/ChRt.patch
 
 **AbsoluteEncoder** class is tested with Maxon ENX absolute encoder.
 
@@ -28,7 +28,7 @@ of last set.
 
 **Qtr8a** class is tested with Pololu QTR-8A reflectance sensor array. It can compute
 deviation of position relative the center of the line. The deviation accuracy is about
-100 micrometers. The class uses adaptive threshold to discriminate black and white.
+0.1 millimeters. The class uses adaptive threshold to discriminate black and white.
 
 **QuadratureEncoder** class is tested with Pololu magnetic encoder kit.
 

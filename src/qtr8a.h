@@ -40,13 +40,13 @@ namespace iclass
                                             uint8_t     pin6,
                                             uint8_t     pin7,
                                             uint8_t     pin8,
-                                            int         lineWidth,          // micrometers
+                                            int         lineWidth,          // millimeters
                                             int         readBits = 10,
                                             bool        inverse = false
                                         );
 
         void                            read();
-        int                             deviation() const;                  // micrometers
+        double                          deviation() const;                  // millimeters
         bool                            isEmpty() const;
         bool                            isFull() const;
         const char*                     dump() const;
@@ -55,6 +55,7 @@ namespace iclass
 
         int                             leftEdge_() const;
         int                             rightEdge_() const;
+        int                             uDeviation_() const;
 
         uint8_t                         pins_[ 8 ];
         const int                       lineWidth_;
