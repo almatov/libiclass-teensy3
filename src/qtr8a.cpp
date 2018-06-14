@@ -19,6 +19,7 @@
 */
 
 #include <cstdio>
+#include <cstring>
 #include <Arduino.h>
 
 #include "qtr8a.h"
@@ -26,11 +27,13 @@
 using namespace std;
 using namespace iclass;
 
-const int       SENSORS_PITCH_      ( 9500 );   // micrometers
-const int       POOR_RANGE_         ( 20 );     // percentage
+static const int        SENSORS_PITCH_      ( 9500 );   // micrometers
+static const int        POOR_RANGE_         ( 33 );     // percentage
+static const unsigned   HISTORY_SIZE_       ( 64 );     // bytes
+static const unsigned   DUMP_BUFFER_SIZE_   ( 59 );     // bytes
 
-const int       LEFT_EDGE_BOUND_    ( -(SENSORS_PITCH_ * 7) >> 1 );
-const int       RIGHT_EDGE_BOUND_   ( (SENSORS_PITCH_ * 7) >> 1 );
+static const int        LEFT_EDGE_BOUND_    ( -(SENSORS_PITCH_ * 7) >> 1 );
+static const int        RIGHT_EDGE_BOUND_   ( (SENSORS_PITCH_ * 7) >> 1 );
 
 /**************************************************************************************************************/
 Qtr8a::Qtr8a
@@ -45,11 +48,11 @@ Qtr8a::Qtr8a
     uint8_t     pin8,
     int         lineWidth,
     int         readBits,
-    bool        inverse
+    bool        shouldInvert
 ) :
     lineWidth_( lineWidth * 1000 ),
     readRange_( 1 << readBits ),
-    inverse_( inverse )
+    shouldInvert_( shouldInvert )
 {
     pins_[ 0 ] = pin1;
     pins_[ 1 ] = pin2;
@@ -64,6 +67,17 @@ Qtr8a::Qtr8a
     {
         pinMode( pins_[i], INPUT );
     }
+
+    history_ = bits_ = new uint8_t[ HISTORY_SIZE_ ];
+    memset( history_, 0, HISTORY_SIZE_ );
+    dumpBuffer_ = new char[ DUMP_BUFFER_SIZE_ ];
+}
+
+/**************************************************************************************************************/
+Qtr8a::~Qtr8a()
+{
+    delete[] dumpBuffer_;
+    delete[] history_;
 }
 
 /**************************************************************************************************************/
@@ -94,27 +108,72 @@ Qtr8a::read()
 
     threshold_ = minimum + ( range << 2 ) / 5;
     relativeRange_ = range * 100 / readRange_;
+
+    if ( --bits_ < history_ )
+    {
+        bits_ += HISTORY_SIZE_;
+    }
+
+    if ( relativeRange_ > POOR_RANGE_ )
+    {
+        *bits_ =
+            ( (raws_[0] > threshold_) ^ shouldInvert_ ) |
+            ( ((raws_[1]>threshold_) ^ shouldInvert_) << 1 ) |
+            ( ((raws_[2]>threshold_) ^ shouldInvert_) << 2 ) |
+            ( ((raws_[3]>threshold_) ^ shouldInvert_) << 3 ) |
+            ( ((raws_[4]>threshold_) ^ shouldInvert_) << 4 ) |
+            ( ((raws_[5]>threshold_) ^ shouldInvert_) << 5 ) |
+            ( ((raws_[6]>threshold_) ^ shouldInvert_) << 6 ) |
+            ( ((raws_[7]>threshold_) ^ shouldInvert_) << 7 );
+    }
+    else
+    {
+        *bits_ = ( (threshold_ <= (readRange_>>1)) ^ shouldInvert_ )? 0x00 : 0xff;
+    }
 }
 
 /**************************************************************************************************************/
-double
-Qtr8a::deviation() const
+int
+Qtr8a::findLine() const
 {
-    return uDeviation_() / 1000.0;
-}
+    if ( *bits_ != 0x00 )
+    {
+        return 0;
+    }
 
-/**************************************************************************************************************/
-bool
-Qtr8a::isEmpty() const
-{
-    return ( relativeRange_ <= POOR_RANGE_ ) && ( threshold_ <= (readRange_ >> 1) );
-}
+    bool        isExtremeFound( false );
+    uint8_t*    past( bits_ + 1 );
 
-/**************************************************************************************************************/
-bool
-Qtr8a::isFull() const
-{
-    return ( relativeRange_ <= POOR_RANGE_ ) && ( threshold_ > (readRange_ >> 1) );
+    while ( true )
+    {
+        if ( past >= history_ + HISTORY_SIZE_ )
+        {
+            past = history_;
+        }
+
+        if ( !isExtremeFound && past == bits_ )
+        {
+            return 0;
+        }
+        else if ( !isExtremeFound && (*past & 0x81) != 0x00 )
+        {
+            isExtremeFound = true;
+        }
+        else if ( isExtremeFound && (past == bits_ || (*past & 0x81) == 0x00) )
+        {
+            break;
+        }
+
+        ++past;
+    }
+
+    switch ( *--past & 0x81 )
+    {
+        case 0x80:  return -1;
+        case 0x01:  return 1;
+    }
+
+    return 0;
 }
 
 /**************************************************************************************************************/
@@ -124,8 +183,9 @@ Qtr8a::dump() const
     snprintf
     (
         dumpBuffer_,
-        sizeof( dumpBuffer_ ),
-        "[%d] %d %d %d %d %d %d %d %d [%d%%]",
+        DUMP_BUFFER_SIZE_,
+        "0x%02x [%d] %d %d %d %d %d %d %d %d [%d%%]",
+        *bits_,
         threshold_,
         raws_[ 7 ],
         raws_[ 6 ],
@@ -148,13 +208,13 @@ Qtr8a::leftEdge_() const
     int     edge( LEFT_EDGE_BOUND_ );
     int     prev( raws_[7] );
 
-    if ( (prev < threshold_) ^ inverse_ )
+    if ( (prev < threshold_) ^ shouldInvert_ )
     {
         const int*  next( raws_ + 6 );
 
         while ( next >= raws_ )
         {
-            if ( (*next >= threshold_) ^ inverse_ )
+            if ( (*next >= threshold_) ^ shouldInvert_ )
             {
                 edge += ( threshold_ - prev ) * SENSORS_PITCH_ / ( *next - prev );
 
@@ -176,13 +236,13 @@ Qtr8a::rightEdge_() const
     int     edge( RIGHT_EDGE_BOUND_ );
     int     prev( raws_[0] );
 
-    if ( (prev < threshold_) ^ inverse_ )
+    if ( (prev < threshold_) ^ shouldInvert_ )
     {
         const int*  next( raws_ + 1 );
 
         while ( next <= raws_ + 7 )
         {
-            if ( (*next >= threshold_) ^ inverse_ )
+            if ( (*next >= threshold_) ^ shouldInvert_ )
             {
                 edge -= ( threshold_ - prev ) * SENSORS_PITCH_ / ( *next - prev );
 
@@ -199,7 +259,7 @@ Qtr8a::rightEdge_() const
 
 /**************************************************************************************************************/
 int
-Qtr8a::uDeviation_() const
+Qtr8a::deviation_() const
 {
     if ( relativeRange_ <= POOR_RANGE_ )
     {

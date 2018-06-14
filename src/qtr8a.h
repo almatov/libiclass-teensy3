@@ -40,13 +40,16 @@ namespace iclass
                                             uint8_t     pin6,
                                             uint8_t     pin7,
                                             uint8_t     pin8,
-                                            int         lineWidth,          // millimeters
+                                            int         lineWidth,              // millimeters
                                             int         readBits = 10,
-                                            bool        inverse = false
+                                            bool        shouldInvert = false
                                         );
 
+                                        ~Qtr8a();
+
         void                            read();
-        double                          deviation() const;                  // millimeters
+        double                          deviation() const;                      // millimeters
+        int                             findLine() const;                       // - left, 0 ahead, + right
         bool                            isEmpty() const;
         bool                            isFull() const;
         const char*                     dump() const;
@@ -55,17 +58,50 @@ namespace iclass
 
         int                             leftEdge_() const;
         int                             rightEdge_() const;
-        int                             uDeviation_() const;
+        int                             deviation_() const;
 
-        uint8_t                         pins_[ 8 ];
         const int                       lineWidth_;
         const int                       readRange_;
-        const bool                      inverse_;
+        const bool                      shouldInvert_;
+
+        uint8_t                         pins_[ 8 ];
         int                             raws_[ 8 ];
         int                             threshold_;
         int                             relativeRange_;
-        mutable char                    dumpBuffer_[ 54];
+        uint8_t*                        bits_;
+        uint8_t*                        history_;
+
+        mutable char*                   dumpBuffer_;
     };
+}
+
+/*
+****************************************************************************************************************
+****************************************************************************************************************
+*/
+
+namespace iclass
+{
+    //---------------------------------------------------------------------------------------------------------
+    inline double
+    Qtr8a::deviation() const
+    {
+        return deviation_() / 1000.0;
+    }
+
+    //---------------------------------------------------------------------------------------------------------
+    inline bool
+    Qtr8a::isEmpty() const
+    {
+        return *bits_ == 0x00;
+    }
+
+    //---------------------------------------------------------------------------------------------------------
+    inline bool
+    Qtr8a::isFull() const
+    {
+        return *bits_ == 0xff;
+    }
 }
 
 #endif  // LIBICLASS_QTR8A_H_
