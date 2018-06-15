@@ -24,9 +24,9 @@
 
 using namespace iclass;
 
-const unsigned  SLEEP_INTERVAL_     ( 30 );         // milliseconds
-const unsigned  FLUSH_INTERVAL_     ( 300 );        // milliseconds
-const unsigned  WRITE_BLOCK_SIZE_   ( 1024 );       // bytes
+static const unsigned  SLEEP_INTERVAL_      ( 30 );     // milliseconds
+static const unsigned  FLUSH_INTERVAL_      ( 300 );    // milliseconds
+static const unsigned  WRITE_BLOCK_SIZE_    ( 1024 );   // bytes
 
 /**************************************************************************************************************/
 LoggerQueue::LoggerQueue( unsigned ringSize ) :

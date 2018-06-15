@@ -24,7 +24,7 @@
 
 using namespace iclass;
 
-const double    KCS_    ( 0.13 );
+static const float  KCS_    ( 0.13 );   // volts per amper
 
 /**************************************************************************************************************/
 Vnh::Vnh
@@ -114,7 +114,5 @@ Vnh::setPwm( int pwm )
 float
 Vnh::current( int arBits, float aref )
 {
-    double  kAmper( static_cast<double>(aref) / ((1<<arBits) - 1) / KCS_ );
-    
-    return analogRead( csPin_ ) * kAmper;
+    return analogRead( csPin_ ) * aref / ((1<<arBits) - 1) / KCS_;
 }
