@@ -29,8 +29,8 @@ using namespace iclass;
 
 static const int        SENSORS_PITCH_      ( 9500 );   // micrometers
 static const int        POOR_RANGE_         ( 33 );     // percentage
-static const unsigned   HISTORY_SIZE_       ( 64 );     // bytes
-static const unsigned   DUMP_BUFFER_SIZE_   ( 59 );     // bytes
+static const unsigned   HISTORY_SIZE_       ( 128 );    // bytes
+static const unsigned   DUMP_BUFFER_SIZE_   ( 64 );     // bytes
 
 static const int        LEFT_EDGE_BOUND_    ( -(SENSORS_PITCH_ * 7) >> 1 );
 static const int        RIGHT_EDGE_BOUND_   ( (SENSORS_PITCH_ * 7) >> 1 );
@@ -167,7 +167,12 @@ Qtr8a::findLine() const
         ++past;
     }
 
-    switch ( *--past & 0x81 )
+    if ( --past < history_ )
+    {
+        past += HISTORY_SIZE_;
+    }
+
+    switch ( *past & 0x81 )
     {
         case 0x80:  return -1;
         case 0x01:  return 1;
