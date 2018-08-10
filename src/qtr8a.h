@@ -41,7 +41,8 @@ namespace iclass
                                             uint8_t     pin7,
                                             uint8_t     pin8,
                                             int         lineWidth,              // millimeters
-                                            int         readBits = 10,
+                                            int         readBits = 10,          // analogRead resolution
+                                            unsigned    historySize = 80,       // bytes
                                             bool        shouldInvert = false
                                         );
 
@@ -62,6 +63,7 @@ namespace iclass
 
         const int                       lineWidth_;
         const int                       readRange_;
+        const unsigned                  historySize_;
         const bool                      shouldInvert_;
 
         uint8_t                         pins_[ 8 ];

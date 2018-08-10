@@ -29,7 +29,6 @@ using namespace iclass;
 
 static const int        SENSORS_PITCH_      ( 9500 );   // micrometers
 static const int        POOR_RANGE_         ( 33 );     // percentage
-static const unsigned   HISTORY_SIZE_       ( 128 );    // bytes
 static const unsigned   DUMP_BUFFER_SIZE_   ( 64 );     // bytes
 
 static const int        LEFT_EDGE_BOUND_    ( -(SENSORS_PITCH_ * 7) >> 1 );
@@ -48,10 +47,12 @@ Qtr8a::Qtr8a
     uint8_t     pin8,
     int         lineWidth,
     int         readBits,
+    unsigned    historySize,
     bool        shouldInvert
 ) :
     lineWidth_( lineWidth * 1000 ),
     readRange_( 1 << readBits ),
+    historySize_( historySize ),
     shouldInvert_( shouldInvert )
 {
     pins_[ 0 ] = pin1;
@@ -68,8 +69,8 @@ Qtr8a::Qtr8a
         pinMode( pins_[i], INPUT );
     }
 
-    history_ = bits_ = new uint8_t[ HISTORY_SIZE_ ];
-    memset( history_, 0, HISTORY_SIZE_ );
+    history_ = bits_ = new uint8_t[ historySize_ ];
+    memset( history_, 0, historySize_ );
     dumpBuffer_ = new char[ DUMP_BUFFER_SIZE_ ];
 }
 
@@ -111,7 +112,7 @@ Qtr8a::read()
 
     if ( --bits_ < history_ )
     {
-        bits_ += HISTORY_SIZE_;
+        bits_ += historySize_;
     }
 
     if ( relativeRange_ > POOR_RANGE_ )
@@ -146,30 +147,36 @@ Qtr8a::findLine() const
 
     while ( true )
     {
-        if ( past >= history_ + HISTORY_SIZE_ )
+        if ( past >= history_ + historySize_ )
         {
             past = history_;
         }
 
-        if ( !isExtremeFound && past == bits_ )
+        if ( past == bits_ )
         {
-            return 0;
+            if ( ++past >= history_ + historySize_ )
+            {
+                past = history_;
+            }
+
+            break;
         }
-        else if ( !isExtremeFound && (*past & 0x81) != 0x00 )
+
+        if ( !isExtremeFound && (*past & 0x81) != 0x00 )
         {
             isExtremeFound = true;
         }
-        else if ( isExtremeFound && (past == bits_ || (*past & 0x81) == 0x00) )
+        else if ( isExtremeFound && (*past & 0x81) == 0x00 )
         {
+            if ( --past < history_ )
+            {
+                past += historySize_;
+            }
+
             break;
         }
 
         ++past;
-    }
-
-    if ( --past < history_ )
-    {
-        past += HISTORY_SIZE_;
     }
 
     switch ( *past & 0x81 )
