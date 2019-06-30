@@ -2,7 +2,7 @@
 ****************************************************************************************************************
 ****************************************************************************************************************
 
-    Copyright (C) 2017 Askar Almatov
+    Copyright (C) 2017, 2019 Askar Almatov
 
     This file is part of Libiclass. 
     
@@ -34,10 +34,13 @@ AbsoluteEncoder::AbsoluteEncoder( int bits, uint8_t clockPin, uint8_t dataPin ) 
 {
     pinMode( clockPin_, OUTPUT );
     pinMode( dataPin_, INPUT_PULLUP );
-
     delayMicroseconds( 100 );
 
     digitalWrite( clockPin_, HIGH );
+    delayMicroseconds( 1000 );
+
+    update();
+    counts_ = 0.0f;
 }
 
 /**************************************************************************************************************/
