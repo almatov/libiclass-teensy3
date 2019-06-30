@@ -2,7 +2,7 @@
 ****************************************************************************************************************
 ****************************************************************************************************************
 
-    Copyright (C) 2017, 2018 Askar Almatov
+    Copyright (C) 2017, 2018, 2019 Askar Almatov
 
     This file is part of Libiclass. 
     
@@ -142,7 +142,7 @@ Qtr8a::findLine() const
         return 0;
     }
 
-    bool        isExtremeFound( false );
+    uint8_t*    extreme( nullptr );
     uint8_t*    past( bits_ + 1 );
 
     while ( true )
@@ -162,18 +162,25 @@ Qtr8a::findLine() const
             break;
         }
 
-        if ( !isExtremeFound && (*past & 0x81) != 0x00 )
+        if ( extreme != nullptr )
         {
-            isExtremeFound = true;
-        }
-        else if ( isExtremeFound && (*past & 0x81) == 0x00 )
-        {
-            if ( --past < history_ )
+            if ( (*past & 0x81) == 0x00 )
             {
-                past += historySize_;
-            }
+                if ( *past == 0x00 )
+                {
+                    past = extreme;
+                }
+                else if ( --past < history_ )
+                {
+                    past += historySize_;
+                }
 
-            break;
+                break;
+            }
+        }
+        else if ( (*past & 0x81) != 0x00 )
+        {
+            extreme = past;
         }
 
         ++past;
