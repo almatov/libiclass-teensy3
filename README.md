@@ -13,7 +13,8 @@ patch the ChRt library with command
 
 	patch -p0 < libiclass-teensy3/ChRt.patch
 
-**AbsoluteEncoder** class is tested with Maxon ENX absolute encoder.
+**AbsoluteEncoder** class is tested with Maxon ENX 16 EASY Absolute encoder with SSI
+Gray code protocol.
 
 **Common** class is a base class for all classes that assume concurrent access.
 

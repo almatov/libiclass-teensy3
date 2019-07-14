@@ -29,9 +29,9 @@ namespace iclass
 
     public:
 
-                                        Encoder( int cpr );
+                                        Encoder( unsigned long cpr );
 
-        int                             delta() const;
+        long                            delta() const;
         float                           rotations() const;
         float                           rpm() const;
 
@@ -39,9 +39,9 @@ namespace iclass
 
     protected:
 
-        const int                       cpr_;
+        const unsigned long             cpr_;
         const float                     kRpm_;
-        int                             delta_;
+        long                            delta_;
         unsigned long                   interval_;
         unsigned long                   time_;
         float                           counts_;

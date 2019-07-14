@@ -18,6 +18,7 @@
     <http://www.gnu.org/licenses/>.
 */
 
+#include <cassert>
 #include <Arduino.h>
 
 #include "absoluteencoder.h"
@@ -29,9 +30,9 @@ AbsoluteEncoder::AbsoluteEncoder( int bits, uint8_t clockPin, uint8_t dataPin ) 
     Encoder( 0x1 << bits ),
     bits_( bits ),
     clockPin_( clockPin ),
-    dataPin_( dataPin ),
-    state_( 0 )
+    dataPin_( dataPin )
 {
+    assert( bits <= 31 && bits > 0 );
     pinMode( clockPin_, OUTPUT );
     pinMode( dataPin_, INPUT_PULLUP );
     delayMicroseconds( 100 );
@@ -39,6 +40,7 @@ AbsoluteEncoder::AbsoluteEncoder( int bits, uint8_t clockPin, uint8_t dataPin ) 
     digitalWrite( clockPin_, HIGH );
     delayMicroseconds( 1000 );
 
+    state_ = 0;
     update();
     counts_ = 0.0f;
 }
@@ -48,7 +50,7 @@ void
 AbsoluteEncoder::update()
 {
     unsigned long  now( micros() );
-    uint16_t       gray( 0 );
+    unsigned long  gray( 0 );
 
     for ( int i = bits_-1; i >= 0; --i )
     {
