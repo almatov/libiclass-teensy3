@@ -2,7 +2,7 @@
 ****************************************************************************************************************
 ****************************************************************************************************************
 
-    Copyright (C) 2017 Askar Almatov
+    Copyright (C) 2017, 2019 Askar Almatov
 
     This file is part of Libiclass. 
     
@@ -33,13 +33,13 @@ namespace iclass
 
     public:
 
-                                        AbsoluteEncoder( int bits, uint8_t clockPin, uint8_t dataPin );
+                                        AbsoluteEncoder( unsigned bits, uint8_t clockPin, uint8_t dataPin );
 
         virtual void                    update() override;
 
     protected:
 
-        const int                       bits_;
+        const unsigned                  bits_;
         const uint8_t                   clockPin_;
         const uint8_t                   dataPin_;
         int                             state_;

@@ -2,7 +2,7 @@
 ****************************************************************************************************************
 ****************************************************************************************************************
 
-    Copyright (C) 2017 Askar Almatov
+    Copyright (C) 2017, 2019 Askar Almatov
 
     This file is part of Libiclass. 
     
@@ -35,7 +35,7 @@ namespace iclass
 
                                         QuadratureEncoder
                                         (
-                                            int       cpr,
+                                            unsigned  cpr,
                                             uint8_t   pin1,
                                             uint8_t   pin2,
                                             unsigned  zeroInterval = 1000

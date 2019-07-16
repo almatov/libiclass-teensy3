@@ -23,7 +23,7 @@
 using namespace iclass;
 
 /**************************************************************************************************************/
-Encoder::Encoder( unsigned long cpr ) :
+Encoder::Encoder( unsigned cpr ) :
     cpr_( cpr ),
     kRpm_( 60000000.0f / cpr_ ),
     delta_( 0 ),
@@ -34,7 +34,7 @@ Encoder::Encoder( unsigned long cpr ) :
 }
 
 /**************************************************************************************************************/
-long
+int
 Encoder::delta() const
 {
     return delta_;
