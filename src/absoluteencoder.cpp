@@ -38,7 +38,7 @@ AbsoluteEncoder::AbsoluteEncoder( unsigned bits, uint8_t clockPin, uint8_t dataP
     digitalWrite( clockPin_, HIGH );
     delayMicroseconds( 1000 );
 
-    state_ = 0;
+    position_ = 0;
     update();
     counts_ = 0.0f;
 }
@@ -47,7 +47,7 @@ AbsoluteEncoder::AbsoluteEncoder( unsigned bits, uint8_t clockPin, uint8_t dataP
 void
 AbsoluteEncoder::update()
 {
-    unsigned long   now( micros() );
+    unsigned long	now( micros() );
     unsigned        gray( 0 );
 
     for ( int i = bits_; i > 0; --i )
@@ -57,22 +57,23 @@ AbsoluteEncoder::update()
         gray |= digitalRead( dataPin_ ) << i;
     }
 
-    int  newState( 0 );
+    int  	newPosition( 0 );
 
     for ( ; gray; gray >>= 1 )
     {
-        newState ^= gray;
+        newPosition ^= gray;
     }
 
-    delta_ = ( newState - state_ ) & ( cpr_ - 1 );
+    int		newDelta( (newPosition - position_) & (cpr_ - 1) );
 
-    if ( delta_ >= (cpr_ >> 1) )
+    if ( newDelta & (cpr_ >> 1) )
     {
-        delta_ -= cpr_;
+        newDelta -= cpr_;
     }
 
+	delta_ = newDelta;
     interval_ = now - time_;
     time_ = now;
     counts_ += delta_;
-    state_ = newState;
+    position_ = newPosition;
 }

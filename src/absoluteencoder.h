@@ -33,17 +33,39 @@ namespace iclass
 
     public:
 
-                                        AbsoluteEncoder( unsigned bits, uint8_t clockPin, uint8_t dataPin );
+                                        AbsoluteEncoder
+                                        (
+                                            unsigned    bits,       // [1-31]
+                                            uint8_t     clockPin,
+                                            uint8_t     dataPin
+                                        );
 
         virtual void                    update() override;
+
+        int                             position() const;
 
     protected:
 
         const unsigned                  bits_;
         const uint8_t                   clockPin_;
         const uint8_t                   dataPin_;
-        int                             state_;
+        int                             position_;
     };
+}
+
+/*
+****************************************************************************************************************
+****************************************************************************************************************
+*/
+
+namespace iclass
+{
+    //---------------------------------------------------------------------------------------------------------
+    inline int
+    AbsoluteEncoder::position() const
+    {
+        return position_;
+    }
 }
 
 #endif  // LIBICLASS_ABSOLUTEENCODER_H_
