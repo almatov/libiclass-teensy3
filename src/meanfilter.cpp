@@ -63,5 +63,5 @@ MeanFilter::put( int value )
 int
 MeanFilter::get() const
 {
-    return sum_? sum_/nElements_ : 0;
+    return sum_? sum_/static_cast<long>(nElements_) : 0;
 }
