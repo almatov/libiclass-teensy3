@@ -36,8 +36,8 @@ namespace iclass
 
         Common&                         operator =( const Common& ) = delete;
 
-	    void                            lock();
-	    void                            unlock();
+        void                            lock();
+        void                            unlock();
 
     private:
 
