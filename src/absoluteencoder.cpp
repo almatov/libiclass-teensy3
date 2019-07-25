@@ -50,7 +50,7 @@ AbsoluteEncoder::update()
     unsigned long   now( micros() );
     unsigned        gray( 0 );
 
-    for ( int i = bits_; i > 0; --i )
+    for ( int i = bits_ - 1; i >= 0; --i )
     {
         digitalWrite( clockPin_, LOW );
         digitalWrite( clockPin_, HIGH );
