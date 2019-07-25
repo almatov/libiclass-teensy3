@@ -97,7 +97,7 @@ MedianFilter::clear()
 void
 MedianFilter::attach_( int value )
 {
-    if ( value <= premedian_->value )
+    if ( value < premedian_->value )
     {
         if ( value <= min_->value )
         {
@@ -127,7 +127,7 @@ MedianFilter::attach_( int value )
             premedian_ = premedian_->lower;
         }
     }
-    else
+    else if ( value > premedian_->value )
     {
         if ( value >= min_->lower->value )
         {
@@ -156,6 +156,18 @@ MedianFilter::attach_( int value )
             premedian_ = premedian_->upper;
         }
     }
+    else
+    {
+        oldest_->upper = premedian_->upper;
+        oldest_->lower = premedian_;
+        premedian_->upper->lower = oldest_;
+        premedian_->upper = oldest_;
+
+        if ( !(nElements_ & 0x1) )
+        {
+            premedian_ = premedian_->upper;
+        }
+    }
 }
 
 /**************************************************************************************************************/
@@ -169,47 +181,39 @@ MedianFilter::detach_( Element* element )
     if ( element == min_ )
     {
         min_ = element->upper;
-    }
 
-    int  position;
-
-    if ( element == premedian_ )
-    {
-        position = 0;
+        if ( nElements_ & 0x1 )
+        {
+            premedian_ = premedian_->upper;
+        }
     }
-    else if ( element->value < premedian_->value )
+    else if ( element == premedian_ )
     {
-        position = -1;
-    }
-    else if ( element->value > premedian_->value )
-    {
-        position = 1;
+        premedian_ = ( nElements_ & 0x1 )? premedian_->upper : premedian_->lower;
     }
     else
     {
         for ( Element* e(element);; e = e->lower )
         {
-            if ( e == min_ || e->value < element->value )
+            if ( e->value < premedian_->value || e == min_ )
             {
-                position = -1;
+                if ( nElements_ & 0x1 )
+                {
+                    premedian_ = premedian_->upper;
+                }
 
                 break;
             }
-            else if ( e == premedian_ )
+
+            if ( e->value > premedian_->value || e == premedian_ )
             {
-                position = 1;
+                if ( !(nElements_ & 0x1) )
+                {
+                    premedian_ = premedian_->lower;
+                }
 
                 break;
             }
         }
-    }
-
-    if ( !(nElements_ & 0x1) && position >= 0 )
-    {
-        premedian_ = premedian_->lower;
-    }
-    else if ( (nElements_ & 0x1) && position <= 0 )
-    {
-        premedian_ = premedian_->upper;
     }
 }
