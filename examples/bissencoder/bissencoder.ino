@@ -4,9 +4,9 @@
 
     This program prints encoder information to the serial console.
 
-    The program has been tested with FAULHABER AESM-4096 Absolute encoder. If you are using Teensy-3.6 or any
-    other non-5V tolerant board make sure to change the input signal level on the DATA_PIN from 5V to 3.3V to
-    avoid damaging.
+    The program has been tested with FAULHABER AESM-4096 Absolute encoder. This encoder has 5V output signal.
+    CAUTION: Use signal level converter for input DATA_PIN when you are using Teensy-3.6 or any other non-5V
+    tolerant board to avoid damaging. An example of a proper connection can be found at 'images/encoder.png'.
 */
 
 #include <bissencoder.h>
