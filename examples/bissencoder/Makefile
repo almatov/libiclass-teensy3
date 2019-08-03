@@ -1,7 +1,7 @@
 ARDUINO_QUIET	= 1
 BOARD_TAG    	= teensy31
 F_CPU        	= 96000000
-ARDUINO_LIBS 	= SPI SdFat ChRt libiclass-teensy3
+ARDUINO_LIBS 	= libiclass-teensy3 ChRt SdFat SPI
 
 include ~/opt/Arduino-Makefile/Teensy.mk
 
