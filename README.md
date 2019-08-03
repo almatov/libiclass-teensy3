@@ -35,7 +35,7 @@ the position deviation relative to the center of the line. The deviation accurac
 0.1 millimeters. The class uses an adaptive threshold to discriminate black and white.
 
 **QuadratureEncoder** class is a digital Hall sensor based encoder. It was tested with
-Pololu magnetic encoder kit.
+Pololu Magnetic Encoder Kit for Micro Metal Gearmotors.
 
 **Task** class is a base for all classes that assume parallel execution.
 
