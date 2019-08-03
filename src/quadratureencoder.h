@@ -21,6 +21,7 @@
 #ifndef LIBICLASS_QUADRATUREENCODER_H_
 #define LIBICLASS_QUADRATUREENCODER_H_ 1
 
+#include <atomic>
 #include <cstdint>
 
 #include "encoder.h"
@@ -38,13 +39,12 @@ namespace iclass
                                             unsigned  cpr,
                                             uint8_t   pin1,
                                             uint8_t   pin2,
-                                            unsigned  zeroInterval = 1000
+                                            unsigned  zeroInterval = 1000   // microseconds
                                         );
 
         virtual void                    update() override;
 
-        void                            lock() const;
-        void                            unlock() const;
+        void                            interruptUpdate();                  // for interrupt handler only
 
     protected:
 
@@ -54,6 +54,7 @@ namespace iclass
         uint8_t                         pin1Bitmask_;
         uint8_t                         pin2Bitmask_;
         int                             state_;
+        std::atomic<int>                interruptDelta_;
     };
 }
 
