@@ -26,417 +26,422 @@
 using namespace std;
 using namespace iclass;
 
-static QuadratureEncoder*   interruptArgs_[ 58 ];
+struct QuadratureEncoder_ : QuadratureEncoder
+{
+    using QuadratureEncoder::interruptUpdate_;
+};
+
+static QuadratureEncoder_*   interruptArgs_[ 58 ];
 
 /**************************************************************************************************************/
 static void
 isr0_()
 {
-    interruptArgs_[ 0 ]->interruptUpdate();
+    interruptArgs_[ 0 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr1_()
 {
-    interruptArgs_[ 1 ]->interruptUpdate();
+    interruptArgs_[ 1 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr2_()
 {
-    interruptArgs_[ 2 ]->interruptUpdate();
+    interruptArgs_[ 2 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr3_()
 {
-    interruptArgs_[ 3 ]->interruptUpdate();
+    interruptArgs_[ 3 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr4_()
 {
-    interruptArgs_[ 4 ]->interruptUpdate();
+    interruptArgs_[ 4 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr5_()
 {
-    interruptArgs_[ 5 ]->interruptUpdate();
+    interruptArgs_[ 5 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr6_()
 {
-    interruptArgs_[ 6 ]->interruptUpdate();
+    interruptArgs_[ 6 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr7_()
 {
-    interruptArgs_[ 7 ]->interruptUpdate();
+    interruptArgs_[ 7 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr8_()
 {
-    interruptArgs_[ 8 ]->interruptUpdate();
+    interruptArgs_[ 8 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr9_()
 {
-    interruptArgs_[ 9 ]->interruptUpdate();
+    interruptArgs_[ 9 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr10_()
 {
-    interruptArgs_[ 10 ]->interruptUpdate();
+    interruptArgs_[ 10 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr11_()
 {
-    interruptArgs_[ 11 ]->interruptUpdate();
+    interruptArgs_[ 11 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr12_()
 {
-    interruptArgs_[ 12 ]->interruptUpdate();
+    interruptArgs_[ 12 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr13_()
 {
-    interruptArgs_[ 13 ]->interruptUpdate();
+    interruptArgs_[ 13 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr14_()
 {
-    interruptArgs_[ 14 ]->interruptUpdate();
+    interruptArgs_[ 14 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr15_()
 {
-    interruptArgs_[ 15 ]->interruptUpdate();
+    interruptArgs_[ 15 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr16_()
 {
-    interruptArgs_[ 16 ]->interruptUpdate();
+    interruptArgs_[ 16 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr17_()
 {
-    interruptArgs_[ 17 ]->interruptUpdate();
+    interruptArgs_[ 17 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr18_()
 {
-    interruptArgs_[ 18 ]->interruptUpdate();
+    interruptArgs_[ 18 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr19_()
 {
-    interruptArgs_[ 19 ]->interruptUpdate();
+    interruptArgs_[ 19 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr20_()
 {
-    interruptArgs_[ 20 ]->interruptUpdate();
+    interruptArgs_[ 20 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr21_()
 {
-    interruptArgs_[ 21 ]->interruptUpdate();
+    interruptArgs_[ 21 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr22_()
 {
-    interruptArgs_[ 22 ]->interruptUpdate();
+    interruptArgs_[ 22 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr23_()
 {
-    interruptArgs_[ 23 ]->interruptUpdate();
+    interruptArgs_[ 23 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr24_()
 {
-    interruptArgs_[ 24 ]->interruptUpdate();
+    interruptArgs_[ 24 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr25_()
 {
-    interruptArgs_[ 25 ]->interruptUpdate();
+    interruptArgs_[ 25 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr26_()
 {
-    interruptArgs_[ 26 ]->interruptUpdate();
+    interruptArgs_[ 26 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr27_()
 {
-    interruptArgs_[ 27 ]->interruptUpdate();
+    interruptArgs_[ 27 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr28_()
 {
-    interruptArgs_[ 28 ]->interruptUpdate();
+    interruptArgs_[ 28 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr29_()
 {
-    interruptArgs_[ 29 ]->interruptUpdate();
+    interruptArgs_[ 29 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr30_()
 {
-    interruptArgs_[ 30 ]->interruptUpdate();
+    interruptArgs_[ 30 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr31_()
 {
-    interruptArgs_[ 31 ]->interruptUpdate();
+    interruptArgs_[ 31 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr32_()
 {
-    interruptArgs_[ 32 ]->interruptUpdate();
+    interruptArgs_[ 32 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr33_()
 {
-    interruptArgs_[ 33 ]->interruptUpdate();
+    interruptArgs_[ 33 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr34_()
 {
-    interruptArgs_[ 34 ]->interruptUpdate();
+    interruptArgs_[ 34 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr35_()
 {
-    interruptArgs_[ 35 ]->interruptUpdate();
+    interruptArgs_[ 35 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr36_()
 {
-    interruptArgs_[ 36 ]->interruptUpdate();
+    interruptArgs_[ 36 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr37_()
 {
-    interruptArgs_[ 37 ]->interruptUpdate();
+    interruptArgs_[ 37 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr38_()
 {
-    interruptArgs_[ 38 ]->interruptUpdate();
+    interruptArgs_[ 38 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr39_()
 {
-    interruptArgs_[ 39 ]->interruptUpdate();
+    interruptArgs_[ 39 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr40_()
 {
-    interruptArgs_[ 40 ]->interruptUpdate();
+    interruptArgs_[ 40 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr41_()
 {
-    interruptArgs_[ 41 ]->interruptUpdate();
+    interruptArgs_[ 41 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr42_()
 {
-    interruptArgs_[ 42 ]->interruptUpdate();
+    interruptArgs_[ 42 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr43_()
 {
-    interruptArgs_[ 43 ]->interruptUpdate();
+    interruptArgs_[ 43 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr44_()
 {
-    interruptArgs_[ 44 ]->interruptUpdate();
+    interruptArgs_[ 44 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr45_()
 {
-    interruptArgs_[ 45 ]->interruptUpdate();
+    interruptArgs_[ 45 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr46_()
 {
-    interruptArgs_[ 46 ]->interruptUpdate();
+    interruptArgs_[ 46 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr47_()
 {
-    interruptArgs_[ 47 ]->interruptUpdate();
+    interruptArgs_[ 47 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr48_()
 {
-    interruptArgs_[ 48 ]->interruptUpdate();
+    interruptArgs_[ 48 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr49_()
 {
-    interruptArgs_[ 49 ]->interruptUpdate();
+    interruptArgs_[ 49 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr50_()
 {
-    interruptArgs_[ 50 ]->interruptUpdate();
+    interruptArgs_[ 50 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr51_()
 {
-    interruptArgs_[ 51 ]->interruptUpdate();
+    interruptArgs_[ 51 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr52_()
 {
-    interruptArgs_[ 52 ]->interruptUpdate();
+    interruptArgs_[ 52 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr53_()
 {
-    interruptArgs_[ 53 ]->interruptUpdate();
+    interruptArgs_[ 53 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr54_()
 {
-    interruptArgs_[ 54 ]->interruptUpdate();
+    interruptArgs_[ 54 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr55_()
 {
-    interruptArgs_[ 55 ]->interruptUpdate();
+    interruptArgs_[ 55 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr56_()
 {
-    interruptArgs_[ 56 ]->interruptUpdate();
+    interruptArgs_[ 56 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
 isr57_()
 {
-    interruptArgs_[ 57 ]->interruptUpdate();
+    interruptArgs_[ 57 ]->interruptUpdate_();
 }
 
 /**************************************************************************************************************/
 static void
-attachQuadratureEncoderInterrupt_( uint8_t pin, QuadratureEncoder* encoder )
+attachQuadratureEncoderInterrupt_( uint8_t pin, QuadratureEncoder_* encoder )
 {
     switch ( pin )
     {
@@ -874,8 +879,8 @@ QuadratureEncoder::QuadratureEncoder
         state_ |= 2;
     }
 
-    attachQuadratureEncoderInterrupt_( pin1, this );
-    attachQuadratureEncoderInterrupt_( pin2, this );
+    attachQuadratureEncoderInterrupt_( pin1, reinterpret_cast<QuadratureEncoder_*>(this) );
+    attachQuadratureEncoderInterrupt_( pin2, reinterpret_cast<QuadratureEncoder_*>(this) );
 }
 
 /**************************************************************************************************************/
@@ -927,7 +932,7 @@ QuadratureEncoder::update()
         1       1       1       1       0       no movement
 */
 void
-QuadratureEncoder::interruptUpdate()
+QuadratureEncoder::interruptUpdate_()
 {
     int  newState( state_ >> 2 );
 

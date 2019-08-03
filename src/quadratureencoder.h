@@ -44,9 +44,9 @@ namespace iclass
 
         virtual void                    update() override;
 
-        void                            interruptUpdate();                  // for interrupt handler only
-
     protected:
+
+        void                            interruptUpdate_();
 
         const unsigned                  zeroInterval_;
         volatile uint8_t*               pin1Register_;
