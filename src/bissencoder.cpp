@@ -71,14 +71,12 @@ BissEncoder::BissEncoder( unsigned bits, uint8_t clockPin, uint8_t dataPin ) :
 {
     pinMode( clockPin_, OUTPUT );
     pinMode( dataPin_, INPUT_PULLUP );
-    delayMicroseconds( 100 );
-
     digitalWrite( clockPin_, HIGH );
-    delayMicroseconds( 1000 );
-
+    delayMicroseconds( 100 );
     position_ = 0;
     update();
     counts_ = 0.0f;
+    delayMicroseconds( 100 );
 }
 
 /**************************************************************************************************************/
