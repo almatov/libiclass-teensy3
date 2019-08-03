@@ -16,7 +16,7 @@ const unsigned  CPR( 12 );
 const uint8_t   PIN1( 14 );
 const uint8_t   PIN2( 15 );
 const float     GEAR_RATIO( 51.45f );
-const unsigned  PRINT_EACH( 50 );
+const unsigned  PRINT_EACH( 20 );
 
 /**************************************************************************************************************/
 void
@@ -32,16 +32,14 @@ loop()
 {
     static unsigned             iteration( 0 );
     static QuadratureEncoder    encoder( CPR, PIN1, PIN2 );
-    static MedianFilter         rpmFilter;
+    static MedianFilter         rpmFilter( 4 );
 
     encoder.update();
-    encoder.lock();
 
     int     delta( encoder.delta() );
     float   rotations( encoder.rotations() / GEAR_RATIO );
     int     rpm( encoder.rpm() / GEAR_RATIO );
-
-    encoder.unlock();
+    int     filteredRpm( rpmFilter(rpm) );
 
     if ( iteration % PRINT_EACH == 0 )
     {
@@ -55,9 +53,9 @@ loop()
         ::Serial.print( "\t" );
         ::Serial.print( rpm );
         ::Serial.print( "\t" );
-        ::Serial.println( rpmFilter(rpm) );
+        ::Serial.println( filteredRpm );
     }
 
     iteration++;
-    delay( 2 );
+    delay( 5 );
 }
