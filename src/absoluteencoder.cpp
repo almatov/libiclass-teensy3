@@ -81,14 +81,14 @@ AbsoluteEncoder::routineUpdate_()
         gray |= digitalRead( dataPin_ ) << i;
     }
 
-    int     momentaryPosition( 0 );
+    int     newPosition( 0 );
 
     for ( ; gray; gray >>= 1 )
     {
-        momentaryPosition ^= gray;
+        newPosition ^= gray;
     }
 
-    long    momentaryDelta( (momentaryPosition - position_.exchange(momentaryPosition)) & (cpr_ - 1) );
+    long    momentaryDelta( (newPosition - position_.exchange(newPosition)) & (cpr_ - 1) );
 
     if ( momentaryDelta & (cpr_ >> 1) )
     {
