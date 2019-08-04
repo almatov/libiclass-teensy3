@@ -21,14 +21,16 @@
 #ifndef LIBICLASS_ABSOLUTEENCODER_H_
 #define LIBICLASS_ABSOLUTEENCODER_H_ 1
 
+#include <atomic>
 #include <cstdint>
 
 #include "encoder.h"
+#include "task.h"
 
 namespace iclass
 {
     /**********************************************************************************************************/
-    class AbsoluteEncoder : public Encoder
+    class AbsoluteEncoder : public Encoder, public ChTask<64>
     {
 
     public:
@@ -40,16 +42,22 @@ namespace iclass
                                             uint8_t     dataPin
                                         );
 
-        virtual void                    update() override;
+                                        ~AbsoluteEncoder();
 
-        int                             position() const;
+        virtual void                    update() override;
+        virtual void                    routine() override;
+
+        int                             position() const;           // thread safe
 
     protected:
+
+        void                            routineUpdate_();
 
         const unsigned                  bits_;
         const uint8_t                   clockPin_;
         const uint8_t                   dataPin_;
-        int                             position_;
+        std::atomic<int>                position_;
+        std::atomic<long>               cumulativeDelta_;
     };
 }
 

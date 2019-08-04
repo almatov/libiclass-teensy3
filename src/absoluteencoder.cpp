@@ -34,11 +34,15 @@ AbsoluteEncoder::AbsoluteEncoder( unsigned bits, uint8_t clockPin, uint8_t dataP
     pinMode( clockPin_, OUTPUT );
     pinMode( dataPin_, INPUT_PULLUP );
     digitalWrite( clockPin_, HIGH );
-    delayMicroseconds( 500 );
-    position_ = 0;
-    update();
-    counts_ = 0.0f;
-    delayMicroseconds( 100 );
+    delayMicroseconds( 500 );           // waitng for ready
+    routineUpdate_();                   // set current position
+    cumulativeDelta_ = 0;               // ignore first delta
+    delayMicroseconds( 100 );           // bus reset interval
+}
+
+/**************************************************************************************************************/
+AbsoluteEncoder::~AbsoluteEncoder()
+{
 }
 
 /**************************************************************************************************************/
@@ -46,7 +50,29 @@ void
 AbsoluteEncoder::update()
 {
     unsigned long   now( micros() );
-    unsigned        gray( 0 );
+
+    interval_ = now - time_;
+    time_ = now;
+    delta_ = cumulativeDelta_.exchange( 0 );
+    counts_ += delta_;
+}
+
+/**************************************************************************************************************/
+void
+AbsoluteEncoder::routine()
+{
+    while ( !isStopped() )
+    {
+        routineUpdate_();
+        chThdSleepMilliseconds( 1 );
+    }
+}
+
+/**************************************************************************************************************/
+void
+AbsoluteEncoder::routineUpdate_()
+{
+    unsigned    gray( 0 );
 
     for ( int i = bits_ - 1; i >= 0; --i )
     {
@@ -55,23 +81,19 @@ AbsoluteEncoder::update()
         gray |= digitalRead( dataPin_ ) << i;
     }
 
-    int     newPosition( 0 );
+    int     momentaryPosition( 0 );
 
     for ( ; gray; gray >>= 1 )
     {
-        newPosition ^= gray;
+        momentaryPosition ^= gray;
     }
 
-    long    newDelta( (newPosition - position_) & (cpr_ - 1) );
+    long    momentaryDelta( (momentaryPosition - position_.exchange(momentaryPosition)) & (cpr_ - 1) );
 
-    if ( newDelta & (cpr_ >> 1) )
+    if ( momentaryDelta & (cpr_ >> 1) )
     {
-        newDelta -= cpr_;
+        momentaryDelta -= cpr_;
     }
 
-    delta_ = newDelta;
-    interval_ = now - time_;
-    time_ = now;
-    counts_ += delta_;
-    position_ = newPosition;
+    cumulativeDelta_ += momentaryDelta;
 }
