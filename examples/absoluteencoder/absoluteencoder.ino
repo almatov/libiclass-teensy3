@@ -66,6 +66,7 @@ loop()
     {
         encoder.stop();
         chThdSleepMilliseconds( 5 );
+        ::Serial.println( "Example stopped" );
 
         noInterrupts();
         sleep_enable();
