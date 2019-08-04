@@ -25,11 +25,12 @@
 #include <cstdint>
 
 #include "encoder.h"
+#include "task.h"
 
 namespace iclass
 {
     /**********************************************************************************************************/
-    class BissEncoder : public Encoder
+    class BissEncoder : public Encoder, public ChTask<64>
     {
 
     public:
@@ -41,21 +42,26 @@ namespace iclass
                                             uint8_t     dataPin
                                         );
 
+                                        ~BissEncoder();
+
         virtual void                    update() override;
+        virtual void                    routine() override;
 
-        int                             position() const;
-
+        int                             position() const;           // thread safe
         unsigned                        transmitErrors() const;     // thread safe
         unsigned                        deviceErrors() const;       // thread safe
         unsigned                        deviceWarnings() const;     // thread safe
 
     protected:
 
+        void                            routineUpdate_();
+
         const unsigned                  bits_;
         const uint8_t                   clockPin_;
         const uint8_t                   dataPin_;
-        int                             position_;
 
+        std::atomic<int>                position_;
+        std::atomic<long>               cumulativeDelta_;
         std::atomic<unsigned>           transmitErrors_;
         std::atomic<unsigned>           deviceErrors_;
         std::atomic<unsigned>           deviceWarnings_;

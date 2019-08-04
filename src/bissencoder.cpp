@@ -65,6 +65,7 @@ BissEncoder::BissEncoder( unsigned bits, uint8_t clockPin, uint8_t dataPin ) :
     bits_( bits ),
     clockPin_( clockPin ),
     dataPin_( dataPin ),
+    position_( 0 ),
     transmitErrors_( 0 ),
     deviceErrors_( 0 ),
     deviceWarnings_( 0 )
@@ -72,11 +73,15 @@ BissEncoder::BissEncoder( unsigned bits, uint8_t clockPin, uint8_t dataPin ) :
     pinMode( clockPin_, OUTPUT );
     pinMode( dataPin_, INPUT_PULLUP );
     digitalWrite( clockPin_, HIGH );
-    delayMicroseconds( 100 );
-    position_ = 0;
-    update();
-    counts_ = 0.0f;
-    delayMicroseconds( 100 );
+    delayMicroseconds( 1500 );          // waiting for ready
+    routineUpdate_();                   // set current position
+    cumulativeDelta_ = 0;               // ignore first delta
+    delayMicroseconds( 500 );           // bus reset interval
+}
+
+/**************************************************************************************************************/
+BissEncoder::~BissEncoder()
+{
 }
 
 /**************************************************************************************************************/
@@ -84,9 +89,31 @@ void
 BissEncoder::update()
 {
     unsigned long   now( micros() );
-    unsigned        preamble( 0 );
-    unsigned        data( 0 );
-    unsigned        crc( 0 );
+
+    interval_ = now - time_;
+    time_ = now;
+    delta_ = cumulativeDelta_.exchange( 0 );
+    counts_ += delta_;
+}
+
+/**************************************************************************************************************/
+void
+BissEncoder::routine()
+{
+    while ( !isStopped() )
+    {
+        routineUpdate_();
+        chThdSleepMilliseconds( 1 );
+    }
+}
+
+/**************************************************************************************************************/
+void
+BissEncoder::routineUpdate_()
+{
+    unsigned    preamble( 0 );
+    unsigned    data( 0 );
+    unsigned    crc( 0 );
 
     for ( int i = 4; i > 0; --i )
     {
@@ -132,16 +159,12 @@ BissEncoder::update()
     }
 
     int     newPosition( data >> 2 );
-    long    newDelta( (newPosition - position_) & (cpr_ - 1) );
+    long    momentaryDelta( (newPosition - position_.exchange(newPosition)) & (cpr_ - 1) );
 
-    if ( newDelta & (cpr_ >> 1) )
+    if ( momentaryDelta & (cpr_ >> 1) )
     {
-        newDelta -= cpr_;
+        momentaryDelta -= cpr_;
     }
 
-    delta_ = newDelta;
-    interval_ = now - time_;
-    time_ = now;
-    counts_ += delta_;
-    position_ = newPosition;
+    cumulativeDelta_ += momentaryDelta;
 }

@@ -9,8 +9,10 @@
     tolerant board to avoid damaging. An example of a proper connection can be found at 'images/encoder.png'.
 */
 
+#include <AVR/sleep.h>
+#include <ChRt.h>
+
 #include <bissencoder.h>
-#include <medianfilter.h>
 
 using namespace iclass;
 
@@ -20,12 +22,25 @@ const uint8_t   DATA_PIN( 7 );
 const float     GEAR_RATIO( 1.0f );
 const unsigned  PRINT_EACH( 100 );
 
+static BissEncoder  encoder( BITS, CLOCK_PIN, DATA_PIN );
+
+/**************************************************************************************************************/
+void
+chSetup()
+{
+    encoder.start( NORMALPRIO + 2 );
+}
+
 /**************************************************************************************************************/
 void
 setup()
 {
     ::Serial.begin( 115200 );
     delay( 5000 );
+    ::Serial.println( "Press any key to stop" );
+
+    chBegin( chSetup );
+    // no return from chBegin()
 }
  
 /**************************************************************************************************************/
@@ -33,37 +48,38 @@ void
 loop()
 {
     static unsigned         iteration( 0 );
-    static BissEncoder      encoder( BITS, CLOCK_PIN, DATA_PIN );
-    static MedianFilter     rpmFilter;
 
     encoder.update();
 
-    int     rpm( encoder.rpm() / GEAR_RATIO );
-    int     filteredRpm( rpmFilter(rpm) );
+    ::Serial.print( iteration++ );
+    ::Serial.print( "\t" );
+    ::Serial.print( micros() );
+    ::Serial.print( "\t" );
+    ::Serial.print( encoder.transmitErrors() );
+    ::Serial.print( "\t" );
+    ::Serial.print( encoder.deviceErrors() );
+    ::Serial.print( "\t" );
+    ::Serial.print( encoder.deviceWarnings() );
+    ::Serial.print( "\t" );
+    ::Serial.print( encoder.position() );
+    ::Serial.print( "\t" );
+    ::Serial.print( encoder.delta() );
+    ::Serial.print( "\t" );
+    ::Serial.print( encoder.rotations() / GEAR_RATIO );
+    ::Serial.print( "\t" );
+    ::Serial.println( static_cast<int>(encoder.rpm() / GEAR_RATIO) );
 
-    if ( iteration % PRINT_EACH == 0 )
+    if ( ::Serial.available() > 0 )
     {
-        ::Serial.print( iteration );
-        ::Serial.print( "\t" );
-        ::Serial.print( micros() );
-        ::Serial.print( "\t" );
-        ::Serial.print( encoder.transmitErrors() );
-        ::Serial.print( "\t" );
-        ::Serial.print( encoder.deviceErrors() );
-        ::Serial.print( "\t" );
-        ::Serial.print( encoder.deviceWarnings() );
-        ::Serial.print( "\t" );
-        ::Serial.print( encoder.position() );
-        ::Serial.print( "\t" );
-        ::Serial.print( encoder.delta() );
-        ::Serial.print( "\t" );
-        ::Serial.print( encoder.rotations() / GEAR_RATIO );
-        ::Serial.print( "\t" );
-        ::Serial.print( rpm );
-        ::Serial.print( "\t" );
-        ::Serial.println( filteredRpm );
+        encoder.stop();
+        chThdSleepMilliseconds( 5 );
+        ::Serial.println( "Example stopped" );
+
+        noInterrupts();
+        sleep_enable();
+        sleep_cpu();
+        // halt
     }
 
-    iteration++;
-    delay( 1 );
+    chThdSleepMilliseconds( 1 );
 }
