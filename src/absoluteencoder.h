@@ -56,6 +56,7 @@ namespace iclass
         const unsigned                  bits_;
         const uint8_t                   clockPin_;
         const uint8_t                   dataPin_;
+
         std::atomic<int>                position_;
         std::atomic<long>               cumulativeDelta_;
     };

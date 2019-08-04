@@ -29,15 +29,12 @@ AbsoluteEncoder::AbsoluteEncoder( unsigned bits, uint8_t clockPin, uint8_t dataP
     Encoder( 1 << bits ),
     bits_( bits ),
     clockPin_( clockPin ),
-    dataPin_( dataPin )
+    dataPin_( dataPin ),
+    position_( 0 )
 {
     pinMode( clockPin_, OUTPUT );
     pinMode( dataPin_, INPUT_PULLUP );
     digitalWrite( clockPin_, HIGH );
-    delayMicroseconds( 500 );           // waitng for ready
-    routineUpdate_();                   // set current position
-    cumulativeDelta_ = 0;               // ignore first delta
-    delayMicroseconds( 100 );           // bus reset interval
 }
 
 /**************************************************************************************************************/
@@ -61,6 +58,11 @@ AbsoluteEncoder::update()
 void
 AbsoluteEncoder::routine()
 {
+    chThdSleepMicroseconds( 500 );      // waiting for ready
+    routineUpdate_();                   // set current position
+    cumulativeDelta_ = 0;               // ignore first delta
+    chThdSleepMicroseconds( 100 );      // bus reset interval
+
     while ( !isStopped() )
     {
         routineUpdate_();

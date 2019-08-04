@@ -73,10 +73,6 @@ BissEncoder::BissEncoder( unsigned bits, uint8_t clockPin, uint8_t dataPin ) :
     pinMode( clockPin_, OUTPUT );
     pinMode( dataPin_, INPUT_PULLUP );
     digitalWrite( clockPin_, HIGH );
-    delayMicroseconds( 1500 );          // waiting for ready
-    routineUpdate_();                   // set current position
-    cumulativeDelta_ = 0;               // ignore first delta
-    delayMicroseconds( 500 );           // bus reset interval
 }
 
 /**************************************************************************************************************/
@@ -100,6 +96,11 @@ BissEncoder::update()
 void
 BissEncoder::routine()
 {
+    chThdSleepMicroseconds( 500 );      // waiting for ready
+    routineUpdate_();                   // set current position
+    cumulativeDelta_ = 0;               // ignore first delta
+    chThdSleepMicroseconds( 100 );      // bus reset interval
+
     while ( !isStopped() )
     {
         routineUpdate_();
