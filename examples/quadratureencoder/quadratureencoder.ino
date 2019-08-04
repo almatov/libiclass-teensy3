@@ -41,7 +41,7 @@ loop()
     ::Serial.print( "\t" );
     ::Serial.print( encoder.rotations() / GEAR_RATIO );
     ::Serial.print( "\t" );
-    ::Serial.println( encoder.rpm() / GEAR_RATIO );
+    ::Serial.println( static_cast<int>(encoder.rpm() / GEAR_RATIO) );
 
     delay( 100 );
 }
