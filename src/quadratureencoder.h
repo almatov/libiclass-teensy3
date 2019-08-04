@@ -54,7 +54,7 @@ namespace iclass
         uint8_t                         pin1Bitmask_;
         uint8_t                         pin2Bitmask_;
         int                             state_;
-        std::atomic<int>                interruptDelta_;
+        std::atomic<long>               interruptDelta_;
     };
 }
 

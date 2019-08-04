@@ -31,7 +31,7 @@ namespace iclass
 
                                         Encoder( unsigned cpr );
 
-        int                             delta() const;
+        long                            delta() const;
         float                           rotations() const;
         float                           rpm() const;
 
@@ -41,7 +41,7 @@ namespace iclass
 
         const unsigned                  cpr_;
         const float                     kRpm_;
-        int                             delta_;
+        long                            delta_;
         unsigned long                   interval_;
         unsigned long                   time_;
         float                           counts_;

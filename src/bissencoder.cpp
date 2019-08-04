@@ -132,7 +132,7 @@ BissEncoder::update()
     }
 
     int     newPosition( data >> 2 );
-    int     newDelta( (newPosition - position_) & (cpr_ - 1) );
+    long    newDelta( (newPosition - position_) & (cpr_ - 1) );
 
     if ( newDelta & (cpr_ >> 1) )
     {
