@@ -18,6 +18,7 @@ const unsigned  BITS( 12 );
 const uint8_t   CLOCK_PIN( 8 );
 const uint8_t   DATA_PIN( 7 );
 const float     GEAR_RATIO( 3.9f );
+const unsigned  PRINT_EACH( 100 );
 
 /**************************************************************************************************************/
 void
@@ -31,28 +32,32 @@ setup()
 void
 loop()
 {
+    static unsigned         iteration( 0 );
     static AbsoluteEncoder  encoder( BITS, CLOCK_PIN, DATA_PIN );
     static MedianFilter     rpmFilter;
-    int                     rpm;
-    int                     filteredRpm;
 
-    for ( unsigned i = 100; i > 0; --i )
+    encoder.update();
+
+    int     rpm( encoder.rpm() / GEAR_RATIO );
+    int     filteredRpm( rpmFilter(rpm) );
+
+    if ( iteration % PRINT_EACH == 0 )
     {
-        encoder.update();
-        rpm = static_cast<int>( encoder.rpm() / GEAR_RATIO );
-        filteredRpm = rpmFilter( rpm );
-        delay( 1 );
+        ::Serial.print( iteration );
+        ::Serial.print( "\t" );
+        ::Serial.print( micros() );
+        ::Serial.print( "\t" );
+        ::Serial.print( encoder.position() );
+        ::Serial.print( "\t" );
+        ::Serial.print( encoder.delta() );
+        ::Serial.print( "\t" );
+        ::Serial.print( encoder.rotations() / GEAR_RATIO );
+        ::Serial.print( "\t" );
+        ::Serial.print( rpm );
+        ::Serial.print( "\t" );
+        ::Serial.println( filteredRpm );
     }
 
-    ::Serial.print( micros() );
-    ::Serial.print( "\t" );
-    ::Serial.print( encoder.position() );
-    ::Serial.print( "\t" );
-    ::Serial.print( encoder.delta() );
-    ::Serial.print( "\t" );
-    ::Serial.print( encoder.rotations() / GEAR_RATIO );
-    ::Serial.print( "\t" );
-    ::Serial.print( rpm );
-    ::Serial.print( "\t" );
-    ::Serial.println( filteredRpm );
+    iteration++;
+    delay( 1 );
 }
