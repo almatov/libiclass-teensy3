@@ -33,14 +33,12 @@ AbsoluteEncoder::AbsoluteEncoder( unsigned bits, uint8_t clockPin, uint8_t dataP
 {
     pinMode( clockPin_, OUTPUT );
     pinMode( dataPin_, INPUT_PULLUP );
-    delayMicroseconds( 100 );
-
     digitalWrite( clockPin_, HIGH );
-    delayMicroseconds( 1000 );
-
+    delayMicroseconds( 500 );
     position_ = 0;
     update();
     counts_ = 0.0f;
+    delayMicroseconds( 100 );
 }
 
 /**************************************************************************************************************/
