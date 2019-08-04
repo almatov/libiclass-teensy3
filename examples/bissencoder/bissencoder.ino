@@ -80,5 +80,5 @@ loop()
         // halt
     }
 
-    chThdSleepMilliseconds( 1 );
+    chThdSleepMilliseconds( 100 );
 }
