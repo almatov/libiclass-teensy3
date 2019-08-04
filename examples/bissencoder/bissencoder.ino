@@ -20,7 +20,6 @@ const unsigned  BITS( 12 );
 const uint8_t   CLOCK_PIN( 8 );
 const uint8_t   DATA_PIN( 7 );
 const float     GEAR_RATIO( 1.0f );
-const unsigned  PRINT_EACH( 100 );
 
 static BissEncoder  encoder( BITS, CLOCK_PIN, DATA_PIN );
 
