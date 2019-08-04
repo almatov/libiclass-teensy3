@@ -40,7 +40,7 @@ namespace iclass
         unsigned                        queueSize() const;
         unsigned                        overflows() const;
 
-        virtual size_t                  write( uint8_t );
+        virtual size_t                  write( uint8_t ) override;
 
     protected:
 
@@ -69,7 +69,7 @@ namespace iclass
         unsigned                        writes() const;
         unsigned                        writeBytes() const;
 
-        virtual void                    routine();
+        virtual void                    routine() override;
 
     protected:
 
