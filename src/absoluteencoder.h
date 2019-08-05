@@ -57,8 +57,8 @@ namespace iclass
         const uint8_t                   clockPin_;
         const uint8_t                   dataPin_;
 
-        std::atomic<int>                position_;
-        std::atomic<long>               cumulativeDelta_;
+        std::atomic<int>                position_a_;
+        std::atomic<long>               cumulativeDelta_a_;
     };
 }
 
@@ -73,7 +73,7 @@ namespace iclass
     inline int
     AbsoluteEncoder::position() const
     {
-        return position_;
+        return position_a_;
     }
 }
 

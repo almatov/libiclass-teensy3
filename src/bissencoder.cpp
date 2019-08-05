@@ -65,11 +65,11 @@ BissEncoder::BissEncoder( unsigned bits, uint8_t clockPin, uint8_t dataPin ) :
     bits_( bits ),
     clockPin_( clockPin ),
     dataPin_( dataPin ),
-    position_( 0 ),
-    cumulativeDelta_( 0 ),
-    transmitErrors_( 0 ),
-    deviceErrors_( 0 ),
-    deviceWarnings_( 0 )
+    position_a_( 0 ),
+    cumulativeDelta_a_( 0 ),
+    transmitErrors_a_( 0 ),
+    deviceErrors_a_( 0 ),
+    deviceWarnings_a_( 0 )
 {
     pinMode( clockPin_, OUTPUT );
     pinMode( dataPin_, INPUT_PULLUP );
@@ -89,7 +89,7 @@ BissEncoder::update()
 
     interval_ = now - time_;
     time_ = now;
-    delta_ = cumulativeDelta_.exchange( 0 );
+    delta_ = cumulativeDelta_a_.exchange( 0 );
     counts_ += delta_;
 }
 
@@ -99,7 +99,7 @@ BissEncoder::routine()
 {
     chThdSleepMicroseconds( 500 );      // waiting for ready
     routineUpdate_( true );             // set current position, ignore power-on device error
-    cumulativeDelta_ = 0;               // ignore first delta
+    cumulativeDelta_a_ = 0;               // ignore first delta
     chThdSleepMicroseconds( 100 );      // bus reset interval
 
     while ( !isStopped() )
@@ -143,30 +143,30 @@ BissEncoder::routineUpdate_( bool ignoreDeviceError )
 
     if ( preamble != 0xa || crc != crc6_(data, bits_) )
     {
-        ++transmitErrors_;
+        ++transmitErrors_a_;
 
         return;
     }
 
     if ( !ignoreDeviceError && !(data & 0x2) )
     {
-        ++deviceErrors_;
+        ++deviceErrors_a_;
 
         return;
     }
 
     if ( !(data & 0x1) )
     {
-        ++deviceWarnings_;
+        ++deviceWarnings_a_;
     }
 
     int     newPosition( data >> 2 );
-    long    momentaryDelta( (newPosition - position_.exchange(newPosition)) & (cpr_ - 1) );
+    long    momentaryDelta( (newPosition - position_a_.exchange(newPosition)) & (cpr_ - 1) );
 
     if ( momentaryDelta & (cpr_ >> 1) )
     {
         momentaryDelta -= cpr_;
     }
 
-    cumulativeDelta_ += momentaryDelta;
+    cumulativeDelta_a_ += momentaryDelta;
 }

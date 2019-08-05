@@ -60,11 +60,11 @@ namespace iclass
         const uint8_t                   clockPin_;
         const uint8_t                   dataPin_;
 
-        std::atomic<int>                position_;
-        std::atomic<long>               cumulativeDelta_;
-        std::atomic<unsigned>           transmitErrors_;
-        std::atomic<unsigned>           deviceErrors_;
-        std::atomic<unsigned>           deviceWarnings_;
+        std::atomic<int>                position_a_;
+        std::atomic<long>               cumulativeDelta_a_;
+        std::atomic<unsigned>           transmitErrors_a_;
+        std::atomic<unsigned>           deviceErrors_a_;
+        std::atomic<unsigned>           deviceWarnings_a_;
     };
 }
 
@@ -79,28 +79,28 @@ namespace iclass
     inline int
     BissEncoder::position() const
     {
-        return position_;
+        return position_a_;
     }
 
     //---------------------------------------------------------------------------------------------------------
     inline unsigned
     BissEncoder::transmitErrors() const
     {
-        return transmitErrors_;
+        return transmitErrors_a_;
     }
 
     //---------------------------------------------------------------------------------------------------------
     inline unsigned
     BissEncoder::deviceErrors() const
     {
-        return deviceErrors_;
+        return deviceErrors_a_;
     }
 
     //---------------------------------------------------------------------------------------------------------
     inline unsigned
     BissEncoder::deviceWarnings() const
     {
-        return deviceWarnings_;
+        return deviceWarnings_a_;
     }
 }
 

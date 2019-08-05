@@ -805,7 +805,7 @@ QuadratureEncoder::QuadratureEncoder
     Encoder( cpr ),
     zeroInterval_( zeroInterval ),
     state_( 0 ),
-    cumulativeDelta_( 0 )
+    cumulativeDelta_a_( 0 )
 {
     pinMode( pin1, INPUT_PULLUP );
     pinMode( pin2, INPUT_PULLUP );
@@ -835,7 +835,7 @@ QuadratureEncoder::update()
 {
     unsigned long  now( micros() );
 
-    if ( cumulativeDelta_ == 0 && now >= time_ + zeroInterval_ )
+    if ( cumulativeDelta_a_ == 0 && now >= time_ + zeroInterval_ )
     {
         interval_ = ( now - time_ ) % zeroInterval_;
         time_ = now - interval_;
@@ -845,7 +845,7 @@ QuadratureEncoder::update()
     {
         interval_ = now - time_;
         time_ = now;
-        delta_ = cumulativeDelta_.exchange( 0 );
+        delta_ = cumulativeDelta_a_.exchange( 0 );
         counts_ += delta_;
     }
 }
@@ -899,7 +899,7 @@ QuadratureEncoder::interruptUpdate_()
         case 8:
         case 14:
 
-            cumulativeDelta_ += 1;
+            cumulativeDelta_a_ += 1;
             break;
 
         case 2:
@@ -907,19 +907,19 @@ QuadratureEncoder::interruptUpdate_()
         case 11:
         case 13:
 
-            cumulativeDelta_ -= 1;
+            cumulativeDelta_a_ -= 1;
             break;
 
         case 3:
         case 12:
 
-            cumulativeDelta_ += 2;
+            cumulativeDelta_a_ += 2;
             break;
 
         case 6:
         case 9:
 
-            cumulativeDelta_ -= 2;
+            cumulativeDelta_a_ -= 2;
     }
 
     state_ = newState;
