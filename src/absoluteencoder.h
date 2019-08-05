@@ -44,37 +44,21 @@ namespace iclass
 
                                         ~AbsoluteEncoder();
 
-        virtual void                    update() override;
-        virtual void                    routine() override;
-
         int                             position() const;           // thread safe
+
+        virtual void                    update() override;
 
     protected:
 
+        virtual void                    routine() override;
         void                            routineUpdate_();
 
         const unsigned                  bits_;
         const uint8_t                   clockPin_;
         const uint8_t                   dataPin_;
-
-        std::atomic<int>                position_a_;
         std::atomic<long>               cumulativeDelta_a_;
+        std::atomic<int>                position_a_;
     };
-}
-
-/*
-****************************************************************************************************************
-****************************************************************************************************************
-*/
-
-namespace iclass
-{
-    //---------------------------------------------------------------------------------------------------------
-    inline int
-    AbsoluteEncoder::position() const
-    {
-        return position_a_;
-    }
 }
 
 #endif  // LIBICLASS_ABSOLUTEENCODER_H_

@@ -37,8 +37,8 @@ namespace iclass
                                         LoggerQueue( unsigned ringSize );
                                         ~LoggerQueue();
 
-        unsigned                        queueSize() const;
-        unsigned                        overflows() const;
+        unsigned                        queueSize() const;          // thread safe
+        unsigned                        overflows() const;          // thread safe
 
         virtual size_t                  write( uint8_t ) override;
 
@@ -49,10 +49,8 @@ namespace iclass
 
         const unsigned                  ringSize_;
         uint8_t*                        ring_;
-
         uint8_t*                        front_c_;
         uint8_t*                        back_c_;
-
         std::atomic<unsigned>           queueSize_a_;
         std::atomic<unsigned>           overflows_a_;
     };
@@ -65,16 +63,15 @@ namespace iclass
 
                                         Logger( const char* fileName, unsigned ringSize=8192 );
 
-        unsigned long                   fileSize() const;
-        unsigned                        writes() const;
-        unsigned                        writeBytes() const;
-
-        virtual void                    routine() override;
+        unsigned long                   fileSize() const;           // thread safe
+        unsigned                        writes() const;             // thread safe
+        unsigned                        writeBytes() const;         // thread safe
 
     protected:
 
-        const char*                     fileName_;
+        virtual void                    routine() override;
 
+        const char*                     fileName_;
         std::atomic<unsigned long>      fileSize_a_;
         std::atomic<unsigned>           writes_a_;
         std::atomic<unsigned>           writeBytes_a_;

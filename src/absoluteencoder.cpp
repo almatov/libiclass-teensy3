@@ -30,8 +30,8 @@ AbsoluteEncoder::AbsoluteEncoder( unsigned bits, uint8_t clockPin, uint8_t dataP
     bits_( bits ),
     clockPin_( clockPin ),
     dataPin_( dataPin ),
-    position_a_( 0 ),
-    cumulativeDelta_a_( 0 )
+    cumulativeDelta_a_( 0 ),
+    position_a_( 0 )
 {
     pinMode( clockPin_, OUTPUT );
     pinMode( dataPin_, INPUT_PULLUP );
@@ -41,6 +41,13 @@ AbsoluteEncoder::AbsoluteEncoder( unsigned bits, uint8_t clockPin, uint8_t dataP
 /**************************************************************************************************************/
 AbsoluteEncoder::~AbsoluteEncoder()
 {
+}
+
+/**************************************************************************************************************/
+int
+AbsoluteEncoder::position() const
+{
+    return position_a_;
 }
 
 /**************************************************************************************************************/
@@ -61,7 +68,7 @@ AbsoluteEncoder::routine()
 {
     chThdSleepMicroseconds( 500 );      // waiting for ready
     routineUpdate_();                   // set current position
-    cumulativeDelta_a_ = 0;               // ignore first delta
+    cumulativeDelta_a_ = 0;             // ignore first delta
     chThdSleepMicroseconds( 100 );      // bus reset interval
 
     while ( !isStopped() )

@@ -44,64 +44,27 @@ namespace iclass
 
                                         ~BissEncoder();
 
-        virtual void                    update() override;
-        virtual void                    routine() override;
-
         int                             position() const;           // thread safe
         unsigned                        transmitErrors() const;     // thread safe
         unsigned                        deviceErrors() const;       // thread safe
         unsigned                        deviceWarnings() const;     // thread safe
 
+        virtual void                    update() override;
+
     protected:
 
+        virtual void                    routine() override;
         void                            routineUpdate_( bool ignoreDeviceError = false );
 
         const unsigned                  bits_;
         const uint8_t                   clockPin_;
         const uint8_t                   dataPin_;
-
-        std::atomic<int>                position_a_;
         std::atomic<long>               cumulativeDelta_a_;
+        std::atomic<int>                position_a_;
         std::atomic<unsigned>           transmitErrors_a_;
         std::atomic<unsigned>           deviceErrors_a_;
         std::atomic<unsigned>           deviceWarnings_a_;
     };
-}
-
-/*
-****************************************************************************************************************
-****************************************************************************************************************
-*/
-
-namespace iclass
-{
-    //---------------------------------------------------------------------------------------------------------
-    inline int
-    BissEncoder::position() const
-    {
-        return position_a_;
-    }
-
-    //---------------------------------------------------------------------------------------------------------
-    inline unsigned
-    BissEncoder::transmitErrors() const
-    {
-        return transmitErrors_a_;
-    }
-
-    //---------------------------------------------------------------------------------------------------------
-    inline unsigned
-    BissEncoder::deviceErrors() const
-    {
-        return deviceErrors_a_;
-    }
-
-    //---------------------------------------------------------------------------------------------------------
-    inline unsigned
-    BissEncoder::deviceWarnings() const
-    {
-        return deviceWarnings_a_;
-    }
 }
 
 #endif  // LIBICLASS_BISSENCODER_H_

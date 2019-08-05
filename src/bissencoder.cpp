@@ -65,8 +65,8 @@ BissEncoder::BissEncoder( unsigned bits, uint8_t clockPin, uint8_t dataPin ) :
     bits_( bits ),
     clockPin_( clockPin ),
     dataPin_( dataPin ),
-    position_a_( 0 ),
     cumulativeDelta_a_( 0 ),
+    position_a_( 0 ),
     transmitErrors_a_( 0 ),
     deviceErrors_a_( 0 ),
     deviceWarnings_a_( 0 )
@@ -79,6 +79,34 @@ BissEncoder::BissEncoder( unsigned bits, uint8_t clockPin, uint8_t dataPin ) :
 /**************************************************************************************************************/
 BissEncoder::~BissEncoder()
 {
+}
+
+/**************************************************************************************************************/
+int
+BissEncoder::position() const
+{
+    return position_a_;
+}
+
+/**************************************************************************************************************/
+unsigned
+BissEncoder::transmitErrors() const
+{
+    return transmitErrors_a_;
+}
+
+/**************************************************************************************************************/
+unsigned
+BissEncoder::deviceErrors() const
+{
+    return deviceErrors_a_;
+}
+
+/**************************************************************************************************************/
+unsigned
+BissEncoder::deviceWarnings() const
+{
+    return deviceWarnings_a_;
 }
 
 /**************************************************************************************************************/
@@ -99,7 +127,7 @@ BissEncoder::routine()
 {
     chThdSleepMicroseconds( 500 );      // waiting for ready
     routineUpdate_( true );             // set current position, ignore power-on device error
-    cumulativeDelta_a_ = 0;               // ignore first delta
+    cumulativeDelta_a_ = 0;             // ignore first delta
     chThdSleepMicroseconds( 100 );      // bus reset interval
 
     while ( !isStopped() )

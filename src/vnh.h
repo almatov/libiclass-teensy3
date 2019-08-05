@@ -52,7 +52,6 @@ namespace iclass
         const uint8_t                   binPin_;
         const uint8_t                   pwmPin_;
         const uint8_t                   csPin_;
-
         int                             pwm_;
     };
 }

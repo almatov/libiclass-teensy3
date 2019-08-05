@@ -65,14 +65,12 @@ namespace iclass
         const int                       readRange_;
         const unsigned                  historySize_;
         const bool                      shouldInvert_;
-
         uint8_t                         pins_[ 8 ];
         int                             raws_[ 8 ];
         int                             threshold_;
         int                             relativeRange_;
         uint8_t*                        bits_;
         uint8_t*                        history_;
-
         mutable char*                   dumpBuffer_;
     };
 }

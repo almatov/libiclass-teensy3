@@ -49,7 +49,6 @@ namespace iclass
         void                            interruptUpdate_();
 
         const unsigned                  zeroInterval_;
-
         volatile uint8_t*               pin1Register_;
         volatile uint8_t*               pin2Register_;
         uint8_t                         pin1Bitmask_;
