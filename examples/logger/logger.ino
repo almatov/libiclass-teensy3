@@ -177,7 +177,7 @@ setup()
 void
 loop()
 {
-    static int  iteration( 0 );
+    static unsigned     iteration( 0 );
 
     ::Serial.print( ++iteration );
     ::Serial.print( '\t' );
