@@ -6,7 +6,6 @@
 #include <avr/sleep.h>
 #include <ChRt.h>
 #include <SdFat.h>
-
 #include <logger.h>
 
 using namespace iclass;

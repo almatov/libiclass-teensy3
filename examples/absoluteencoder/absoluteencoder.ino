@@ -10,7 +10,6 @@
 */
 
 #include <ChRt.h>
-
 #include <absoluteencoder.h>
 
 using namespace iclass;

@@ -10,7 +10,6 @@
 */
 
 #include <ChRt.h>
-
 #include <bissencoder.h>
 
 using namespace iclass;
