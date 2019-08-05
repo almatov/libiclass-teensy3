@@ -48,7 +48,7 @@ loop()
 
     encoder.update();
 
-    ::Serial.print( iteration++ );
+    ::Serial.print( ++iteration );
     ::Serial.print( "\t" );
     ::Serial.print( micros() );
     ::Serial.print( "\t" );
