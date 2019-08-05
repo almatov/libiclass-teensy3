@@ -30,7 +30,8 @@ AbsoluteEncoder::AbsoluteEncoder( unsigned bits, uint8_t clockPin, uint8_t dataP
     bits_( bits ),
     clockPin_( clockPin ),
     dataPin_( dataPin ),
-    position_( 0 )
+    position_( 0 ),
+    cumulativeDelta_( 0 )
 {
     pinMode( clockPin_, OUTPUT );
     pinMode( dataPin_, INPUT_PULLUP );
