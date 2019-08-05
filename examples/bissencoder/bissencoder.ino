@@ -47,7 +47,7 @@ setup()
 void
 loop()
 {
-    static unsigned         iteration( 0 );
+    static unsigned     iteration( 0 );
 
     encoder.update();
 
