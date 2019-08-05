@@ -18,7 +18,6 @@
     <http://www.gnu.org/licenses/>.
 */
 
-#include <atomic>
 #include <Arduino.h>
 
 #include "quadratureencoder.h"
