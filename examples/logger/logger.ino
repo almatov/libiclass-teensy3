@@ -1,6 +1,12 @@
 /* logger.ino
 ****************************************************************************************************************
 ****************************************************************************************************************
+
+    This program runs 3 parallel tasks ledBlinker, logFeeder, logger in addition to main process.
+
+    The ledBlinker task blinks builtin LED. The logFeeder task collects information to send the logger.
+    The logger task saves collected information to SD card. The main process controls these tasks and
+    prints current status to serial console.
 */
 
 #include <avr/sleep.h>
