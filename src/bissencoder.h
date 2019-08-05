@@ -54,7 +54,7 @@ namespace iclass
 
     protected:
 
-        void                            routineUpdate_();
+        void                            routineUpdate_( bool ignoreDeviceError = false );
 
         const unsigned                  bits_;
         const uint8_t                   clockPin_;

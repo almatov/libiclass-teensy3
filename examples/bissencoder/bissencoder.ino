@@ -12,7 +12,7 @@
 #include <AVR/sleep.h>
 #include <ChRt.h>
 
-#include <bissencoder.h>
+#include "bissencoder.h"
 
 using namespace iclass;
 
@@ -28,6 +28,7 @@ void
 chSetup()
 {
     encoder.start( NORMALPRIO + 2 );
+    chThdSleepMilliseconds( 1 );
 }
 
 /**************************************************************************************************************/
